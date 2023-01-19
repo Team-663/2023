@@ -14,8 +14,29 @@
  * they are needed.
  */
 
+//#define USE_XBOX_TRIGGER_AS_PITCH 1
+
 namespace OperatorConstants {
 
-constexpr int kDriverControllerPort = 0;
+constexpr int kJoyLPort = 0;
+constexpr int kJoyRPort = 1;
+constexpr int kXboxPort = 2;
 
 }  // namespace OperatorConstants
+
+namespace DriveTrainConstants
+{
+    constexpr int pigin_CANID = 20;
+    constexpr int driveNEOL1_CANID = 1;
+    constexpr int driveNEOL2_CANID = 2;
+    constexpr int driveNEOR1_CANID = 3;
+    constexpr int driveNEOR2_CANID = 4;
+}
+
+namespace AutoConstants
+{
+    constexpr double auto_balance_margin = 0.5;
+    constexpr double autoBalnace_kP = 0.2;
+    constexpr double autoBalance_kD = 0.01; // total guess
+    constexpr double autoBalance_MaxOutput = 0.4;
+};
