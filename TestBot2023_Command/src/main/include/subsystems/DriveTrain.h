@@ -11,6 +11,12 @@
 #include "Constants.h"
 #include <ctre/Phoenix.h>
 #include <rev/CANSparkMax.h>
+#include "frc/smartdashboard/Smartdashboard.h"
+#include "networktables/NetworkTable.h"
+#include "networktables/NetworkTableInstance.h"
+#include "networktables/NetworkTableEntry.h"
+#include "networktables/NetworkTableValue.h"
+//#include "wpi/span.h"
 
 class DriveTrain : public frc2::SubsystemBase {
    public:
@@ -23,6 +29,8 @@ class DriveTrain : public frc2::SubsystemBase {
    void TankDrive(double l, double r);
    void Stop();
    double GetPitch();
+   double GetTargetXOffSet();
+   double GetCameraValidTargets();
 
  private:
    // Components (e.g. motor controllers and sensors) should generally be

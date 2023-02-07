@@ -6,16 +6,22 @@
 
 #include <frc2/command/button/Trigger.h>
 
+
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-//RobotContainer* RobotContainer::m_robotContainer = NULL;
+RobotContainer* RobotContainer::m_robotContainer = NULL;
 
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
   frc::SmartDashboard::PutNumber("TEST NUM", 123);
   frc::SmartDashboard::PutData("Auto Balance", new AutoBalance(&m_driveTrain));
+  frc::SmartDashboard::PutData("Auto Rotate To Tag", new RotateToTag(&m_driveTrain, false));
+  //frc::SmartDashboard::Put("Open Claw", frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
+
+  
+
   // Configure the button bindings
   ConfigureBindings();
 
@@ -27,7 +33,12 @@ RobotContainer::RobotContainer() {
       {&m_driveTrain}));
 }
 
-void RobotContainer::ConfigureBindings() {
+void RobotContainer::ConfigureBindings()
+{
+
+   // frc2::JoystickButton(&m_xbox,
+  //                    frc::XboxController::Button::kA)
+   //   .WhileTrue(RotateToTag(&m_driveTrain, true).ToPtr());
   // Configure your trigger bindings here
 
   // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
@@ -38,7 +49,10 @@ void RobotContainer::ConfigureBindings() {
   // Schedule `ExampleMethodCommand` when the Xbox controller's B button is
   // pressed, cancelling on release.
   //m_xbox.A().WhileActiveOnce(m_)
-  m_xbox.B().WhileTrue(m_subsystem.ExampleMethodCommand());
+  m_xbox.A().WhileTrue(RotateToTag(&m_driveTrain, true).ToPtr());
+  m_xbox.LeftBumper().OnTrue(frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
+  m_xbox.RightBumper().OnTrue(frc2::cmd::Run([this] { m_arm.CloseClaw(); }, {&m_arm}));
+  m_xbox.B().OnTrue(m_arm.ResetElevatorEncoderCommand());
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

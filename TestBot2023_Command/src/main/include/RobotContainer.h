@@ -12,8 +12,11 @@
 #include "Constants.h"
 #include "subsystems/ExampleSubsystem.h"
 #include "subsystems/DriveTrain.h"
+#include "subsystems/Arm.h"
 
 #include <commands/AutoBalance.h>
+#include <commands/RotateToTag.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -42,6 +45,7 @@ private:
    // The robot's subsystems are defined here...
    ExampleSubsystem m_subsystem;
    DriveTrain m_driveTrain;
+   Arm m_arm;
 
    void ConfigureBindings();
 

@@ -27,10 +27,29 @@ constexpr int kXboxPort = 2;
 namespace DriveTrainConstants
 {
     constexpr int pigin_CANID = 20;
+    constexpr int pdp_CANID = 25;
     constexpr int driveNEOL1_CANID = 1;
     constexpr int driveNEOL2_CANID = 2;
     constexpr int driveNEOR1_CANID = 3;
     constexpr int driveNEOR2_CANID = 4;
+}
+
+namespace ArmConstants
+{
+    constexpr int compressor_CANID = 0;
+    constexpr int extendoArm_solenoid1 = 2;
+    constexpr int extendoArm_solenoid2 = 3;
+    constexpr int claw_solenoid1 = 0;
+    constexpr int claw_solenoid2 = 1;
+    constexpr int wristbow_CANID = 7;
+    constexpr int elevator_CANID = 8;
+
+    constexpr int elevator_DIOPIN = 0;
+    
+    constexpr double autoRotateToTag_kP = 0.03;
+    constexpr double autoRotateMaxSpeed = 0.5;
+    constexpr double autoRotateDegreeMargin = 3.0;
+
 }
 
 namespace AutoConstants

@@ -17,17 +17,40 @@ DriveTrain::DriveTrain()
    m_pigeon{20}
 {
    m_rightMotors.SetInverted(true);
+   std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
 }
 // This method will be called once per scheduler run
 void DriveTrain::Periodic()
 {
    frc::SmartDashboard::PutNumber("Gyro Yaw:", m_pigeon.GetYaw());
    frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
+   std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+   double targets = table->GetNumber("tv",0.0);
+   double targetOffsetAngle_Horizontal = table->GetNumber("tx",0.0);
+   double targetOffsetAngle_Vertical = table->GetNumber("ty",0.0);
+   frc::SmartDashboard::PutNumber("Cam Has Target", targets);
+   frc::SmartDashboard::PutNumber("Cam X", targetOffsetAngle_Horizontal);
+   frc::SmartDashboard::PutNumber("Cam Y", targetOffsetAngle_Vertical);
+   
    //frc::SmartDashboard::PutNumber("Enc L"
    //   , m_driveMotorL1.GetEncoder(rev::SparkMaxRelativeEncoder::Type::kHallSensor).GetPosition());
 
    //frc::SmartDashboard::PutNumber("Enc R"
    //   , m_driveMotorR1.GetEncoder(rev::SparkMaxRelativeEncoder::Type::kHallSensor).GetPosition());
+}
+
+double DriveTrain::GetTargetXOffSet()
+{
+   std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+   return table->GetNumber("tx",0.0);
+
+
+}
+
+double DriveTrain::GetCameraValidTargets()
+{
+   std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+   return table->GetNumber("tv",0.0);
 }
 
 void DriveTrain::TankDrive(double l, double r)
