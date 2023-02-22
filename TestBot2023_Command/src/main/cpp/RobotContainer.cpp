@@ -27,10 +27,18 @@ RobotContainer::RobotContainer() {
 
   m_driveTrain.SetDefaultCommand(frc2::cmd::Run(
       [this] {
-        m_driveTrain.TankDrive(-m_xbox.GetLeftY(),
-                            -m_xbox.GetRightY());
+        //m_driveTrain.TankDrive(-m_xbox.GetLeftY(),
+        //                    -m_xbox.GetRightY());
+        m_driveTrain.TankDrive(m_joyL.GetY(), m_joyR.GetY());
       },
       {&m_driveTrain}));
+
+  m_arm.SetDefaultCommand(frc2::cmd::Run(
+      [this] {
+         m_arm.SetElevatorSpeedManual(m_xbox.GetRightY()); 
+      }, 
+      {&m_arm}));
+   //m_arm.ElevatorManualSpeed(m_xbox.GetRightY()));
 }
 
 void RobotContainer::ConfigureBindings()

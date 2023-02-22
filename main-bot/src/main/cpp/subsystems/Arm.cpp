@@ -4,17 +4,10 @@
 
 #include "subsystems/Arm.h"
 
-Arm::Arm()
+
+Arm::Arm() 
 {
-
-
-   //m_WristEnc.SetDistancePerRotation(kElevatorEncDistPerRev);
-
    InitElevatorPID();
-
-
-
-
 }
 
 // This method will be called once per schedule
@@ -66,93 +59,43 @@ void Arm::IncrementElevatorSetpoint(double inc)
 }
 void Arm::SetElevatorSpeedManual(double speed)
 {
-   m_elevatorManualSpeed = speed * kElevatorPowerLimit;
+   m_elevatorSpeedManual = speed * kElevatorPowerLimit;
 }
-void Arm::DisplayValues()
+
+frc2::CommandPtr Arm::ResetElevatorEncoderCommand()
 {
-
-   frc::SmartDashboard::PutNumber("Elevator Enc Raw", m_elevatorEnc.GetDistance());
-   frc::SmartDashboard::PutNumber("Elevator Manual Speed", m_elevatorManualSpeed);
-   
-   
-}
-
-double Arm::GetElevatorEncAbsolute()
-{
-   return m_elevatorEnc.GetAbsolutePosition() / M_PI * 2.0;
-}
-
-void Arm::ResetElevatorEncoder()
-{
-   m_elevatorEnc.Reset();
-}
-
-// WARNING Trevor Nathan work below
-
-bool Arm::IsWristAtUpPosition()
-{
-   return false;
-}
-
-bool Arm::IsWristAtDownPosition()
-{
-   return false;
-}
-
-bool Arm::IsWristAtSetpoint()
-{
-   return false;
-}
-
-void Arm::UpdateWristSetpoint(double target)
-{
-   m_wristSetpoint = target;
-}
-
-void Arm::ResetWristEncoder()
-{
-   m_wristEnc.Reset();
-}
-
-double Arm::GetWristEncAbsolute()
-{
-   return m_wristEnc.GetAbsolutePosition() / M_PI * 2;
+   return this->RunOnce(
+      [this] 
+      {
+         m_elevator.GetSensorCollection().SetAnalogPosition(0, kTimeoutMs);
+         m_elevator.GetSensorCollection().SetQuadraturePosition(0, kTimeoutMs);
+      });
 }
 
 
-frc2::CommandPtr Arm::ResetElevatorEncoderCommand() {
-  return this->RunOnce(
-      [this] { m_elevatorEnc.Reset(); });
-}
-
-//frc2::CommandPtr Arm::ElevatorManualSpeed(double s)
-//{
-   //return this->RunOnce(
-   //   [this] {SetElevatorSpeedManual(s); }
-   //   );
-//}
-
+// This method will be called once per scheduler run
 void Arm::Periodic() 
 {
    bool moveElevatorAllowed = true;
    DisplayValues();
-
+#ifdef USE_ELEVATOR_LIMIT_SWITCHES
    if (m_elevatorLimDown.Get() == 0)
    {
-      if (m_elevatorManualSpeed < 0.0)
+      if (m_elevatorSpeedManual < 0.0)
          moveElevatorAllowed = false;
    }
 
    if (m_elevatorLimUp.Get() == 0)
    {
-      if (m_elevatorManualSpeed > 0.0)
+      if (m_elevatorSpeedManual > 0.0)
          moveElevatorAllowed = false;
    }
 
+#endif
 
-   if ( (m_elevatorManualSpeed > 0.05 || m_elevatorManualSpeed < -0.05) && moveElevatorAllowed)
+   if ( (m_elevatorSpeedManual > 0.05 || m_elevatorSpeedManual < -0.05) && moveElevatorAllowed)
    {
-      m_elevator.Set(ControlMode::PercentOutput, m_elevatorManualSpeed);
+      m_elevator.Set(ControlMode::PercentOutput, m_elevatorSpeedManual);
    }
    else
    {
@@ -163,13 +106,25 @@ void Arm::Periodic()
 
 }
 
+void Arm::DisplayValues()
+{
+
+   frc::SmartDashboard::PutNumber("Elevator Enc Raw", m_elevator.GetSelectedSensorPosition());
+   frc::SmartDashboard::PutNumber("Elevator Manual Speed", m_elevatorSpeedManual);
+
+   frc::SmartDashboard::PutNumber("Elevator Set", m_elevatorSetpoint);
+   frc::SmartDashboard::PutNumber("Elevator Err", m_elevatorError);
+   
+   
+}
+
 void Arm::InitElevatorPID()
 {
 
    m_elevator.ConfigFactoryDefault();
 
    m_elevator.ConfigSelectedFeedbackSensor(
-        FeedbackDevice::CTRE_MagEncoder_Relative, kElevatorPIDID, kTimeoutMs);
+      FeedbackDevice::CTRE_MagEncoder_Relative, kElevatorPIDID, kTimeoutMs);
    m_elevator.SetSensorPhase(false);
    m_elevator.ConfigAllowableClosedloopError(kElevatorPIDID, kElevatorAllowedError, kTimeoutMs);
 
@@ -183,5 +138,28 @@ void Arm::InitElevatorPID()
     //m_elevator.ConfigReverseSoftLimitEnable(true);
 
     //m_elevator.ConfigForwardSoftLimitThreshold(0.0);
-    //m_elevator.ConfigForwardSoftLimitEnable(true);
+}
+
+void Arm::InitWristPID()
+{
+   
+}
+
+void Arm::InitMotors()
+{
+   m_elevator.SetNeutralMode(motorcontrol::NeutralMode::Brake);
+   
+
+   m_elevator.SetInverted(false); // TODO: update
+
+
+   m_elevator.ConfigPeakOutputReverse(-kElevatorPowerLimit);
+   m_elevator.ConfigPeakOutputForward(kElevatorPowerLimit);
+
+   
+   
+   // Current limit seemed to prevent arm from moving fast enough
+   //m_intakeArm.ConfigPeakCurrentLimit(kIntakeArmCurrentLimit);
+   m_elevator.EnableCurrentLimit(false);
+
 }

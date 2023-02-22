@@ -14,38 +14,38 @@
  * they are needed.
  */
 
-//#define USE_XBOX_TRIGGER_AS_PITCH 1
-
 namespace OperatorConstants {
 
 constexpr int kJoyLPort = 0;
 constexpr int kJoyRPort = 1;
 constexpr int kXboxPort = 2;
+constexpr double kXboxStickDeadzone = 0.07;
 
 }  // namespace OperatorConstants
 
 namespace DriveTrainConstants
 {
-    constexpr int pigin_CANID = 20;
-    constexpr int pdp_CANID = 25;
-    constexpr int driveNEOL1_CANID = 1;
-    constexpr int driveNEOL2_CANID = 2;
-    constexpr int driveNEOR1_CANID = 3;
-    constexpr int driveNEOR2_CANID = 4;
+   constexpr int kPigin_CANID = 20;
+   constexpr int pdp_CANID = 25;
+   constexpr int kDriveNEOL1_CANID = 1;
+   constexpr int kDriveNEOL2_CANID = 2;
+   constexpr int kDriveNEOL3_CANID = 3;
+   constexpr int kDriveNEOR1_CANID = 4;
+   constexpr int kDriveNEOR2_CANID = 5;
+   constexpr int kDriveNEOR3_CANID = 6;
 }
 
 namespace ArmConstants
 {
-    constexpr int compressor_CANID = 0;
-    constexpr int extendoArm_solenoid1 = 2;
-    constexpr int extendoArm_solenoid2 = 3;
-    constexpr int claw_solenoid1 = 0;
-    constexpr int claw_solenoid2 = 1;
-    constexpr int wristbow_CANID = 7;
-    constexpr int elevator_CANID = 8;
+   constexpr int kArmSolenoid1 = 2;
+   constexpr int kArmSolenoid2 = 3;
+   constexpr int kClawSolenoid1 = 0;
+   constexpr int kClawSolenoid2 = 1;
+   constexpr int kWrist_CANID = 7;
+   constexpr int kElevator_CANID = 8;
 
     //constexpr int elevator_DIOPIN = 0;
-    constexpr int wrist_DIOPIN = 0;
+    constexpr int kWrist_DIOPIN = 0;
     constexpr int kElevatorLimitDown_DIOPIN = 1;
     constexpr int kElevatorLimitUp_DIOPIN = 2;
     
@@ -64,6 +64,11 @@ namespace ArmConstants
     constexpr int kTimeoutMs = 30;
     constexpr int kElevatorPIDID = 0;
 
+   constexpr int kElevatorPos_HIGH = 4000;
+   constexpr int kElevatorPos_MID = 2000;
+   constexpr int kElevatorPos_LOW = 1000;
+   constexpr int kElevatorPos_DOWN = 0;
+
 }
 
 namespace AutoConstants
@@ -73,3 +78,4 @@ namespace AutoConstants
     constexpr double autoBalance_kD = 0.01; // total guess
     constexpr double autoBalance_MaxOutput = 0.4;
 };
+

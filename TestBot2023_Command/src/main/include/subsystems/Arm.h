@@ -12,8 +12,10 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/Encoder.h>
 #include <frc/DutyCycleEncoder.h>
+#include <frc/DigitalInput.h>
 #include "math.h"
 #include <frc2/command/CommandPtr.h>
+#include <rev/CANSparkMax.h>
 using namespace ArmConstants;
 
 class Arm : public frc2::SubsystemBase {
@@ -39,7 +41,18 @@ class Arm : public frc2::SubsystemBase {
   double GetElevatorEncAbsolute();
   void ResetElevatorEncoder();
 
+   bool IsWristAtUpPosition(); //false
+  bool IsWristAtDownPosition(); //false
+  bool IsWristAtSetpoint(); //false
+  void UpdateWristSetpoint(double target); //works
+  //void IncrementWristSetpoint(double inc); //seems useless
+
+  //void SetWristSpeedManual(double speed); //elevator version is commented out
+  double GetWristEncAbsolute();
+  void ResetWristEncoder();
+
   frc2::CommandPtr ResetElevatorEncoderCommand();
+  //frc2::CommandPtr ElevatorManualSpeed(double s);
 
  private:
   // Components (e.g. motor controllers and sensors) should generally be
@@ -47,9 +60,22 @@ class Arm : public frc2::SubsystemBase {
   frc::Compressor m_pcmComp{compressor_CANID, frc::PneumaticsModuleType::CTREPCM};
   frc::DoubleSolenoid m_extendoArm{frc::PneumaticsModuleType::CTREPCM, extendoArm_solenoid1, extendoArm_solenoid2};
   frc::DoubleSolenoid m_claw{frc::PneumaticsModuleType::CTREPCM, claw_solenoid1, claw_solenoid2};
-  WPI_TalonSRX m_wristbow{wristbow_CANID};
-  frc::DutyCycleEncoder m_elevatorEnc{elevator_DIOPIN}; // Test out rev through bore encoder 
-  //WPI_VictorSPX m_elevator{elevator_CANID};
+  rev::CANSparkMax m_wristbow{wristbow_CANID};
+  WPI_TalonSRX m_elevator{elevator_CANID};
+  frc::DigitalInput m_elevatorLimDown{kElevatorLimitDown_DIOPIN};
+  frc::DigitalInput m_elevatorLimUp{kElevatorLimitUp_DIOPIN};
+  //frc::DutyCycleEncoder m_elevatorEnc{elevator_DIOPIN}; // Test out rev through bore encoder 
+  frc::PIDController m_elevatorPID;
+  //Experimental:
+  frc::DutyCycleEncoder m_wristEnc{wrist_DIOPIN};
+
+  double m_elevatorSetpoint;
+  double m_elevatorError;
+
+  double m_wristSetpoint;
+  double m_wristError;
+
+  double m_elevatorManualSpeed;
 
    void InitializeArmPid();
    void DisplayValues();
