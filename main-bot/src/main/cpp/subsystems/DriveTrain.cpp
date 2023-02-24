@@ -16,7 +16,7 @@ DriveTrain::DriveTrain():
 
    m_pigeon{kPigin_CANID}
 {
-
+   m_leftMotors.SetInverted(true);
 }
 
 // This method will be called once per scheduler run

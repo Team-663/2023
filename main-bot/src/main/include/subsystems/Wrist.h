@@ -23,7 +23,7 @@ class Wrist : public frc2::SubsystemBase {
   void Periodic() override;
 
  private:
-  rev::CANSparkMax m_wrist{kWrist_CANID, rev::CANSparkMaxLowLevel::MotorType::kBrushed};
+  //rev::CANSparkMax m_wrist{kWrist_CANID, rev::CANSparkMaxLowLevel::MotorType::kBrushed};
   double m_wristSpeed;
    //frc::DutyCycleEncoder m_wristEnc{kWrist_DIOPIN};
   // Components (e.g. motor controllers and sensors) should generally be

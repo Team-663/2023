@@ -6,15 +6,15 @@
 
 Wrist::Wrist()
 {
-   m_wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-      m_wrist.SetInverted(false); // TODO: update
+   //m_wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+   //   m_wrist.SetInverted(false); // TODO: update
 
 }
 
 void Wrist::MoveWrist(double val)
 {
    m_wristSpeed = val;
-   m_wrist.Set(m_wristSpeed);
+   //m_wrist.Set(m_wristSpeed);
 }
 
 // This method will be called once per scheduler run

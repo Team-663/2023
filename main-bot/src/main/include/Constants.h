@@ -14,25 +14,38 @@
  * they are needed.
  */
 
-namespace OperatorConstants {
+namespace AutoConstants
+{
+   constexpr double kAutoBalanceMargin = 0.5;
+   constexpr double kAutoBalnace_kP = 0.2;
+   constexpr double kAutoBalance_kD = 0.01; // total guess
+   constexpr double kAutoBalance_MaxOutput = 0.4;
 
-constexpr int kJoyLPort = 0;
-constexpr int kJoyRPort = 1;
-constexpr int kXboxPort = 2;
-constexpr double kXboxStickDeadzone = 0.07;
+   constexpr double kAutoRotateToTag_kP = 0.03;
+   constexpr double kAutoRotateMaxSpeed = 0.5;
+   constexpr double kAutoRotateDegreeMargin = 3.0;
+};
 
-}  // namespace OperatorConstants
+namespace OperatorConstants
+{
+
+   constexpr int kJoyLPort = 0;
+   constexpr int kJoyRPort = 1;
+   constexpr int kXboxPort = 2;
+   constexpr double kXboxStickDeadzone = 0.07;
+
+} // namespace OperatorConstants
 
 namespace DriveTrainConstants
 {
    constexpr int kPigin_CANID = 20;
    constexpr int pdp_CANID = 25;
-   constexpr int kDriveNEOL1_CANID = 1;
-   constexpr int kDriveNEOL2_CANID = 2;
-   constexpr int kDriveNEOL3_CANID = 3;
-   constexpr int kDriveNEOR1_CANID = 4;
-   constexpr int kDriveNEOR2_CANID = 5;
-   constexpr int kDriveNEOR3_CANID = 6;
+   constexpr int kDriveNEOL1_CANID = 4;
+   constexpr int kDriveNEOL2_CANID = 5;
+   constexpr int kDriveNEOL3_CANID = 6;
+   constexpr int kDriveNEOR1_CANID = 1;
+   constexpr int kDriveNEOR2_CANID = 2;
+   constexpr int kDriveNEOR3_CANID = 3;
 }
 
 namespace ArmConstants
@@ -44,25 +57,23 @@ namespace ArmConstants
    constexpr int kWrist_CANID = 7;
    constexpr int kElevator_CANID = 8;
 
-    //constexpr int elevator_DIOPIN = 0;
-    constexpr int kWrist_DIOPIN = 0;
-    constexpr int kElevatorLimitDown_DIOPIN = 1;
-    constexpr int kElevatorLimitUp_DIOPIN = 2;
-    
-    constexpr double kElevatorPowerLimit = 0.75;
-    
-    constexpr double autoRotateToTag_kP = 0.03;
-    constexpr double autoRotateMaxSpeed = 0.5;
-    constexpr double autoRotateDegreeMargin = 3.0;
+   // constexpr int elevator_DIOPIN = 0;
+   constexpr int kWrist_DIOPIN = 0;
+   constexpr int kElevatorLimitDown_DIOPIN = 1;
+   constexpr int kElevatorLimitUp_DIOPIN = 2;
 
-    constexpr double kElevatorAllowedError = 50.0;
-    constexpr double kElevatorEncDistPerRev = 5.62345; // Inches per rev of 15T sprocket (1.79 PD)
-    constexpr double kElevator_P = 0.2;
-    constexpr double kElevator_I= 0.0;
-    constexpr double kElevator_D = 2.0;
-    constexpr double kElevator_F = 0.0;
-    constexpr int kTimeoutMs = 30;
-    constexpr int kElevatorPIDID = 0;
+   constexpr double kElevatorPowerLimit = 0.75;
+
+   constexpr double kWristSpeedScaleFactor = 0.5;
+   
+   constexpr double kElevatorAllowedError = 50.0;
+   constexpr double kElevatorEncDistPerRev = 5.62345; // Inches per rev of 15T sprocket (1.79 PD)
+   constexpr double kElevator_P = 0.2;
+   constexpr double kElevator_I = 0.0;
+   constexpr double kElevator_D = 2.0;
+   constexpr double kElevator_F = 0.0;
+   constexpr int kTimeoutMs = 30;
+   constexpr int kElevatorPIDID = 0;
 
    constexpr int kElevatorPos_HIGH = 4000;
    constexpr int kElevatorPos_MID = 2000;
@@ -73,9 +84,8 @@ namespace ArmConstants
 
 namespace AutoConstants
 {
-    constexpr double auto_balance_margin = 0.5;
-    constexpr double autoBalnace_kP = 0.2;
-    constexpr double autoBalance_kD = 0.01; // total guess
-    constexpr double autoBalance_MaxOutput = 0.4;
+   constexpr double auto_balance_margin = 0.5;
+   constexpr double autoBalnace_kP = 0.2;
+   constexpr double autoBalance_kD = 0.01; // total guess
+   constexpr double autoBalance_MaxOutput = 0.4;
 };
-

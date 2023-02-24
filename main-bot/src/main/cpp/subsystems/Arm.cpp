@@ -104,6 +104,14 @@ void Arm::Periodic()
    frc::SmartDashboard::PutBoolean("Elevator can Move?", moveElevatorAllowed);
    //m_elevator.Set(ControlMode::Position, m_elevatorSetpoint);
 
+      
+   m_wrist.Set(m_wristSpeed);
+
+}
+
+void Arm::SetWristSpeed(double val)
+{
+   m_wristSpeed = val;
 }
 
 void Arm::DisplayValues()
@@ -147,6 +155,9 @@ void Arm::InitWristPID()
 
 void Arm::InitMotors()
 {
+   m_wrist.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+   m_wrist.SetInverted(false); // TODO: update
+
    m_elevator.SetNeutralMode(motorcontrol::NeutralMode::Brake);
    
 

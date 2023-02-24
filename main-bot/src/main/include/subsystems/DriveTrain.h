@@ -17,6 +17,9 @@
 #include "networktables/NetworkTableEntry.h"
 #include "networktables/NetworkTableValue.h"
 
+using namespace DriveTrainConstants;
+using namespace AutoConstants;
+
 class DriveTrain : public frc2::SubsystemBase {
 public:
    DriveTrain();

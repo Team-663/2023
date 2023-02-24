@@ -31,6 +31,7 @@ public:
    bool IsElevatorAtSetpoint();
    void UpdateElevatorSetpoint(double target);
    void IncrementElevatorSetpoint(double inc);
+   void SetWristSpeed(double val);
 
    void SetElevatorSpeedManual(double speed);
    double GetElevatorEncAbsolute();
@@ -42,7 +43,7 @@ public:
  private:
    frc::DoubleSolenoid m_extendoArm{frc::PneumaticsModuleType::CTREPCM, kArmSolenoid1, kArmSolenoid2};
    frc::DoubleSolenoid m_claw{frc::PneumaticsModuleType::CTREPCM, kClawSolenoid1, kClawSolenoid2};
-
+   rev::CANSparkMax m_wrist{kWrist_CANID, rev::CANSparkMaxLowLevel::MotorType::kBrushed};
    WPI_TalonSRX m_elevator{kElevator_CANID};
    frc::DigitalInput m_elevatorLimDown{kElevatorLimitDown_DIOPIN};
    frc::DigitalInput m_elevatorLimUp{kElevatorLimitUp_DIOPIN};
@@ -56,6 +57,7 @@ public:
 
    double m_wristSetpoint;
    double m_wristError;
+   double m_wristSpeed;
 
    void InitElevatorPID();
    void InitWristPID();
