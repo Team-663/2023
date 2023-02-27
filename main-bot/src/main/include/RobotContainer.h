@@ -12,7 +12,6 @@
 #include <subsystems/Arm.h>
 #include <subsystems/DriveTrain.h>
 #include <subsystems/Camera.h>
-#include <subsystems/Wrist.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
 #include "Constants.h"
@@ -21,6 +20,8 @@
 #include <commands/DriveStraightDistance.h>
 #include <commands/AutoBalance.h>
 #include <commands/RotateToTag.h>
+#include <commands/MoveElevatorToPoint.h>
+#include <commands/MoveWristToPoint.h>
 
 using namespace OperatorConstants;
 using namespace ArmConstants;
@@ -41,6 +42,8 @@ public:
    frc::Joystick* GetJoyR();
    frc2::Command* GetAutonomousCommand();
 
+   void SetMotorsToTeleopSettings();
+
    enum E_DPAD_POV {
       DPAD_UP = 0,
       DPAD_RIGHT = 90,
@@ -58,7 +61,6 @@ public:
    // The robot's subsystems are defined here...
    DriveTrain m_drivetrain;
    Arm m_arm;
-   Wrist m_wrist;
    Camera m_camera;
    static RobotContainer* m_robotContainer;
    frc::SendableChooser<frc2::Command*> m_chooser;

@@ -6,10 +6,9 @@
 
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>
-#include "RobotContainer.h"
-#include <subsystems/Arm.h>
-#include "frc/smartdashboard/SmartDashboard.h"
-#include <frc2/command/button/CommandXboxController.h>
+#include <subsystems/DriveTrain.h>
+#include <frc/Timer.h>
+using namespace DriveTrainConstants;
 
 /**
  * An example command.
@@ -18,24 +17,23 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class ArmByJoystick
-    : public frc2::CommandHelper<frc2::CommandBase, ArmByJoystick>
+class RotateToAngle
+    : public frc2::CommandHelper<frc2::CommandBase, RotateToAngle>
 {
 public:
-   // ArmByJoystick(Arm *m_arm, double m_leftY, double m_rightY, int m_pov);
-   ArmByJoystick(Arm *m_arm, frc2::CommandXboxController *m_xbox);
+   RotateToAngle(DriveTrain *m_drivetrain, double m_angle, double m_speed, double m_timeout);
+
+   RotateToAngle();
+
    void Initialize() override;
-
    void Execute() override;
-
    void End(bool interrupted) override;
-
    bool IsFinished() override;
 
 private:
-   Arm *m_arm;
-   frc2::CommandXboxController *m_xbox;
-   double m_leftY;
-   double m_rightY;
-   int m_pov;
+   DriveTrain *m_drivetrain;
+   double m_angle;
+   double m_speed;
+   double m_timeout;
+   frc::Timer m_timer;
 };

@@ -6,7 +6,10 @@
 
 #include <frc2/command/CommandScheduler.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit() 
+{
+  
+}
 
 /**
  * This function is called every 20 ms, no matter the mode. Use
@@ -51,6 +54,9 @@ void Robot::TeleopInit() {
   if (m_autonomousCommand) {
     m_autonomousCommand->Cancel();
   }
+
+  m_container.SetMotorsToTeleopSettings();
+
 }
 
 /**

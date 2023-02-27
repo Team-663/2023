@@ -6,10 +6,10 @@
 
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>
-#include "RobotContainer.h"
 #include <subsystems/Arm.h>
-#include "frc/smartdashboard/SmartDashboard.h"
-#include <frc2/command/button/CommandXboxController.h>
+#include <Constants.h>
+
+using namespace ArmConstants;
 
 /**
  * An example command.
@@ -18,12 +18,12 @@
  * directly; this is crucially important, or else the decorator functions in
  * Command will *not* work!
  */
-class ArmByJoystick
-    : public frc2::CommandHelper<frc2::CommandBase, ArmByJoystick>
+class MoveElevatorToPoint
+    : public frc2::CommandHelper<frc2::CommandBase, MoveElevatorToPoint>
 {
 public:
-   // ArmByJoystick(Arm *m_arm, double m_leftY, double m_rightY, int m_pov);
-   ArmByJoystick(Arm *m_arm, frc2::CommandXboxController *m_xbox);
+   MoveElevatorToPoint(Arm *m_arm, double m_setpoint, double m_timeout);
+
    void Initialize() override;
 
    void Execute() override;
@@ -34,8 +34,6 @@ public:
 
 private:
    Arm *m_arm;
-   frc2::CommandXboxController *m_xbox;
-   double m_leftY;
-   double m_rightY;
-   int m_pov;
+   double m_setpoint;
+   double m_timeout;
 };

@@ -23,15 +23,13 @@ void AutoBalance::Execute() {
    pitch = robot->GetXbox()->GetLeftTriggerAxis() + robot->GetXbox()->GetRightTriggerAxis();
    frc::SmartDashboard::PutNumber("Dummy Pitch Value", pitch);
 #else
-   pitch = m_drivetrain->GetPitch();
+   pitch = m_drivetrain->GyroGetPitch();
 #endif
 
    m_error = -pitch;
 
    double output = m_error * kAutoBalnace_kP * kAutoBalance_MaxOutput;
    frc::SmartDashboard::PutNumber("AutoBalance Output", output);
-
-
 }
 
 // Called once the command ends or is interrupted.

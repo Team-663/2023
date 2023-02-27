@@ -20,7 +20,15 @@ RobotContainer::RobotContainer() {
   
   frc::SmartDashboard::PutData("Auto Balance", new AutoBalance(&m_drivetrain));
   //frc::SmartDashboard::PutData("Auto Rotate To Tag", new RotateToTag(&m_driveTrain, false));
+  frc::SmartDashboard::PutData("Move Elevator To Top", new MoveElevatorToPoint(&m_arm, kElevatorPos_HIGH, 0.0));
+  frc::SmartDashboard::PutData("Move Wrist Straight", new MoveWristToPoint(&m_arm, kWristSetpointStraight, 0.0));
+  frc2::CommandPtr m_elevEncReset = m_arm.ResetElevatorEncoderCommand();
+
+  frc::SmartDashboard::PutData("Reset Elev Encoder", m_elevEncReset.get());
   
+   frc::SmartDashboard::PutData(&m_arm);
+   frc::SmartDashboard::PutData(&m_drivetrain);
+
   m_drivetrain.SetDefaultCommand(frc2::cmd::Run(
       [this] {
         //m_driveTrain.TankDrive(-m_xbox.GetLeftY(),
@@ -28,7 +36,8 @@ RobotContainer::RobotContainer() {
         m_drivetrain.TankDrive(m_joyL.GetY(), m_joyR.GetY());
       },
       {&m_drivetrain}));
-   m_arm.SetDefaultCommand(ArmByJoystick(&m_arm));
+   //m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, m_xbox.GetLeftY(), m_xbox.GetRightY(), m_xbox.GetPOV()));
+   m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, &m_xbox));
 /*
   m_arm.SetDefaultCommand(frc2::cmd::Run(
       [this] {
@@ -55,11 +64,23 @@ RobotContainer* RobotContainer::GetInstance()
 }
 
 void RobotContainer::ConfigureBindings() {
-  //m_xbox.s
-  m_xbox.A().WhileTrue(RotateToTag(&m_drivetrain, &m_camera, true).ToPtr());
-  //m_xbox.LeftBumper().OnTrue(frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
-  //m_xbox.RightBumper().OnTrue(frc2::cmd::Run([this] { m_arm.CloseClaw(); }, {&m_arm}));
-  //m_xbox.B().OnTrue(m_arm.ResetElevatorEncoderCommand());
+  // TODO: enable this when ready
+  //m_xbox.X().WhileTrue(RotateToTag(&m_drivetrain, &m_camera, true).ToPtr());
+
+/* DO NOT USE: these interrupt the ArmByJoystick command */
+/*
+  m_xbox.LeftBumper().OnTrue(frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
+  m_xbox.RightBumper().OnTrue(frc2::cmd::Run([this] { m_arm.CloseClaw(); }, {&m_arm}));
+  m_xbox.Y().OnTrue(frc2::cmd::Run([this] { m_arm.Extend(); }, {&m_arm}));
+  m_xbox.A().OnTrue(frc2::cmd::Run([this] { m_arm.Retract(); }, {&m_arm}));
+  
+  m_xbox.Back().OnTrue(m_arm.ResetElevatorEncoderCommand());
+  */
+}
+
+void RobotContainer::SetMotorsToTeleopSettings()
+{
+   m_drivetrain.SetDrivetrainRamprate(kDriveRampRateTeleop);
 }
 
 //frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

@@ -12,3 +12,16 @@ frc2::CommandPtr autos::ExampleAuto(ExampleSubsystem* subsystem) {
   return frc2::cmd::Sequence(subsystem->ExampleMethodCommand(),
                              ExampleCommand(subsystem).ToPtr());
 }
+
+frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
+{
+  return frc2::cmd::Sequence(
+      arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_HIGH)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointStraight)
+      ,arm->ExtendCmd()
+      ,arm->OpenClawCmd()
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
+      ,arm->RetractCmd()
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_DOWN)
+   );
+}
