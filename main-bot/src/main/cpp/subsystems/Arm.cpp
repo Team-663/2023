@@ -10,6 +10,7 @@ Arm::Arm()
    InitWristPID();
    InitMotors();
    CloseClaw();
+   Retract();
 }
 
 void Arm::ResetElevatorEncoder()
@@ -58,6 +59,12 @@ bool Arm::IsElevatorAtSetpoint()
 {
    return m_isElevatorAtSetpoint;
 }
+
+bool Arm::IsElevatorAtThisPosition(double pos)
+{
+   return (fabs(pos - m_elevator.GetSelectedSensorPosition()) < (kElevatorAllowedError+kElevatorExtraErrorMargin) ? true : false);
+}
+
 void Arm::UpdateElevatorSetpoint(double target)
 {
    m_elevatorSetpoint = target;
@@ -108,7 +115,7 @@ frc2::CommandPtr Arm::SetElevatorPositionCmd(double setpoint)
             // No end of command function
             [this](bool interrupted) { },
             // command finishes when elevator within error margin
-            [this] {return this->IsElevatorAtSetpoint();},
+            [this, setpoint] {return this->IsElevatorAtThisPosition(setpoint);},
             // Requires the arm
             {this})
    );
@@ -133,22 +140,22 @@ frc2::CommandPtr Arm::SetWristPositionCmd(double setpoint)
 
 frc2::CommandPtr Arm::OpenClawCmd()
 {
-   return this->StartEnd([this] { this->OpenClaw(); }, [this] { });
+   return this->RunOnce([this] { this->OpenClaw(); });
 }
 
 frc2::CommandPtr Arm::CloseClawCmd()
 {
-   return this->StartEnd([this] { this->CloseClaw(); }, [this] { });
+   return this->RunOnce([this] { this->CloseClaw(); });
 }
 
 frc2::CommandPtr Arm::ExtendCmd()
 {
-   return this->StartEnd([this] { this->Extend(); }, [this] { });
+   return this->RunOnce([this] { this->Extend(); });
 }
 
 frc2::CommandPtr Arm::RetractCmd()
 {
-   return this->StartEnd([this] { this->Retract(); }, [this] { });
+   return this->RunOnce([this] { this->Retract(); });
 }
 
 #define USE_ELEVATOR_LIMIT_SWITCHES 1
@@ -187,14 +194,17 @@ void Arm::Periodic()
    else
    {
       m_elevator.Set(ControlMode::Position, m_elevatorSetpoint);
-      m_isElevatorAtSetpoint = (fabs(m_elevator.GetClosedLoopError()) <= kElevatorAllowedError ? true : false);
+      m_isElevatorAtSetpoint = (fabs(m_elevator.GetClosedLoopError()) <= (kElevatorAllowedError+kElevatorExtraErrorMargin) ? true : false);
    }
    frc::SmartDashboard::PutBoolean("Elevator can Move?", moveElevatorAllowed);
 
-   m_wrist.Set(m_wristSpeed);
    m_wristError = m_wristEnc.GetPosition() - m_wristSetpoint;
    m_isWristAtSetpoint = (fabs(m_wristError) <= kWristAllowedError ? true : false);
-   //m_wristPID.SetReference(m_wristSetpoint, rev::CANSparkMax::ControlType::kPosition);
+
+   m_wristPIDOutput = std::clamp(m_wristPID2.Calculate(m_wristEnc.GetPosition(), m_wristSetpoint), -0.5, 0.35);
+   //m_wrist.Set(m_wristSpeed);
+   //m_wrist.Set(m_wristPIDOutput);
+   m_wristPID.SetReference(m_wristSetpoint, rev::CANSparkMax::ControlType::kPosition);
 }
 
 void Arm::ElevatorSetPIDState(bool enabled)
@@ -223,6 +233,11 @@ bool Arm::IsWristAtSetpoint()
    return m_isWristAtSetpoint;
 }
 
+bool Arm::IsWristAtThisPosition(double pos)
+{
+   return (fabs(pos - m_wristEnc.GetPosition()) <= kWristAllowedError ? true : false);
+}
+
 
 // Returns TRUE if wrist is <90deg angle
 // Uset to prevent both opening claw inside frame
@@ -232,21 +247,24 @@ void Arm::DisplayValues()
 {
 
    frc::SmartDashboard::PutNumber("Elevator Enc Raw", m_elevator.GetSelectedSensorPosition());
-   frc::SmartDashboard::PutNumber("Elevator Manual Speed", m_elevatorSpeedManual);
+   //frc::SmartDashboard::PutNumber("Elevator Manual Speed", m_elevatorSpeedManual);
 
    frc::SmartDashboard::PutNumber("Elevator Set", m_elevatorSetpoint);
-   frc::SmartDashboard::PutNumber("Elevator Err", m_elevatorError);
+   frc::SmartDashboard::PutNumber("Elevator Err", m_elevator.GetClosedLoopError());
+   frc::SmartDashboard::PutNumber("Elv AMPS", m_elevator.GetOutputCurrent());
 
    frc::SmartDashboard::PutNumber("Wrist Set", m_wristSetpoint);
-   frc::SmartDashboard::PutNumber("Wrist Err", m_wristError);
-   frc::SmartDashboard::PutNumber("Wrist Speed", m_wristSpeed);
-   frc::SmartDashboard::PutNumber("Wrist EncRaw", m_wristEnc.GetPosition());
-   frc::SmartDashboard::PutNumber("Wrist at Target?", m_isWristAtSetpoint);
+   //frc::SmartDashboard::PutNumber("Wrist Err", m_wristError);
+   //frc::SmartDashboard::PutNumber("Wrist Speed", m_wristSpeed);
+   //frc::SmartDashboard::PutNumber("Wrist EncRaw", m_wristEnc.GetPosition());
+   frc::SmartDashboard::PutBoolean("Wrist at Target?", m_isWristAtSetpoint);
+   //frc::SmartDashboard::PutNumber("Wrist PID Out", m_wristPIDOutput);
+   frc::SmartDashboard::PutNumber("Wrist Amps", m_wrist.GetOutputCurrent());
 
    frc::SmartDashboard::PutBoolean("Claw Open?", m_isClawOpen);
-   frc::SmartDashboard::PutBoolean("Elev Lim Top", m_elevatorLimUp.Get());
-   frc::SmartDashboard::PutBoolean("Elev Lim Bottom", m_elevatorLimDown.Get());
-   frc::SmartDashboard::PutBoolean("ElevPid Active?", m_elevatorPIDActive);
+   //frc::SmartDashboard::PutBoolean("Elev Lim Top", m_elevatorLimUp.Get());
+   //frc::SmartDashboard::PutBoolean("Elev Lim Bottom", m_elevatorLimDown.Get());
+   //frc::SmartDashboard::PutBoolean("ElevPid Active?", m_elevatorPIDActive);
    frc::SmartDashboard::PutBoolean("Elev at Target?", m_isElevatorAtSetpoint);
 }
 
@@ -272,6 +290,9 @@ void Arm::InitElevatorPID()
    m_elevator.ConfigForwardSoftLimitEnable(false);
    m_elevator.ConfigReverseSoftLimitThreshold(-20000.0, kTimeoutMs);
    m_elevator.ConfigReverseSoftLimitEnable(false);
+
+   //m_elevatorSetpoint = m_elevator.GetSelectedSensorPosition();
+   ElevatorSetPIDState(true);
 }
 
 void Arm::InitWristPID()
@@ -280,15 +301,13 @@ void Arm::InitWristPID()
    m_wristPID.SetI(kWrist_I);
    m_wristPID.SetD(kWrist_D);
    m_wristPID.SetFF(kWrist_F);
-   m_wristPID.SetOutputRange(-kWristDownSpeed, kWristUpSpeed);
+   m_wristPID.SetOutputRange(kWristPIDMinOutput, kWristPIDMaxOutput);
    m_wristPID.SetFeedbackDevice(m_wristEnc);
    
-   m_wrist.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, false);
-   m_wrist.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, false);
+   m_wrist.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
    m_wrist.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, kWristSoftLimForward);
+   m_wrist.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
    m_wrist.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, kWristSoftLimReverse);
-
-
 }
 
 void Arm::InitMotors()
@@ -297,6 +316,7 @@ void Arm::InitMotors()
    m_wrist.SetInverted(true); // TODO: update
    m_wristEnc.SetPositionConversionFactor(1.0);
    ResetWristEncoder();
+   m_wristSetpoint = m_wristEnc.GetPosition();
 
 
    m_elevator.SetNeutralMode(motorcontrol::NeutralMode::Brake);

@@ -39,12 +39,15 @@ public:
    bool GyroIsAtHeading(double band);
 
    double GetDriveEncoderValue();
+   double GetDriveEncoderVelocity();
    void UpdateDriveSetpoint(double dist);
    bool IsDriveAtSetpoint();
    void DriveToSetpoint();
    void SetDrivetrainRamprate(double rate);
+   bool IsRobotBalanced();
 
    frc2::CommandPtr DriveStraightCmd(double dist, double timeout);
+   frc2::CommandPtr BalanceOnRampCmd(double maxSpeed);
 
 private:
    rev::CANSparkMax m_driveMotorL1{kDriveNEOL1_CANID, rev::CANSparkMax::MotorType::kBrushless};
@@ -66,6 +69,8 @@ private:
    // The robot's drive
    frc::DifferentialDrive m_drive{m_leftMotors, m_rightMotors};
 
+   rev::SparkMaxRelativeEncoder m_DriveL1encoder{m_driveMotorL1.GetEncoder()};
+
    double m_driveLVal;
    double m_driveRVal;
    double m_tgtAngle;
@@ -73,6 +78,10 @@ private:
    double m_driveSetpoint;
    double m_driveError;
    double m_isDriveAtSetpoint;
+   double m_isRobotBalanced;
+
+   double m_encoderPosition;
+   double m_encoderVelocity;
 
    void DisplayValues();
 };

@@ -15,13 +15,19 @@ frc2::CommandPtr autos::ExampleAuto(ExampleSubsystem* subsystem) {
 
 frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
 {
-  return frc2::cmd::Sequence(
+   return frc2::cmd::Sequence(
       arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_HIGH)
-      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointStraight)
       ,arm->ExtendCmd()
+      ,frc2::cmd::Wait(0.5_s)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointDown)
       ,arm->OpenClawCmd()
+      ,frc2::cmd::Wait(0.5_s)      
       ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
+      ,frc2::cmd::Wait(0.5_s) 
+      ,arm->CloseClawCmd()
+      ,frc2::cmd::Wait(0.5_s) 
       ,arm->RetractCmd()
-      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_DOWN)
-   );
+      ,frc2::cmd::Wait(0.5_s)
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
+      );
 }

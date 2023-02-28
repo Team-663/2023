@@ -15,6 +15,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
 #include "Constants.h"
+#include "commands/Autos.h"
 
 #include <commands/ArmByJoystick.h>
 #include <commands/DriveStraightDistance.h>
@@ -63,7 +64,10 @@ public:
    Arm m_arm;
    Camera m_camera;
    static RobotContainer* m_robotContainer;
+   //frc2::CommandPtr m_drive36cmd = m_drivetrain.DriveStraightCmd(36.0, 5.0);
+   frc2::CommandPtr m_scoreAuto = autos::AutoScoreOnMidCmd(&m_arm, &m_drivetrain);
    frc::SendableChooser<frc2::Command*> m_chooser;
+   
   void ConfigureBindings();
   double Deadzone(double input);
 };

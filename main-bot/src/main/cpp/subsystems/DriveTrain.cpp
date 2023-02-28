@@ -17,6 +17,7 @@ DriveTrain::DriveTrain() //:
                            //m_pigeon{kPigin_CANID}
 {
    m_leftMotors.SetInverted(true);
+   m_DriveL1encoder.SetPositionConversionFactor(kEncTicsPerInch);
 }
 
 // This method will be called once per scheduler run
@@ -99,7 +100,12 @@ void DriveTrain::GyroDriveStraight(double speed, double angle)
 
 double DriveTrain::GetDriveEncoderValue()
 {
-   return m_driveMotorL1.GetEncoder().GetPosition();
+   return m_encoderPosition;
+}
+
+double DriveTrain::GetDriveEncoderVelocity()
+{
+   return m_encoderVelocity;
 }
 
 void DriveTrain::DriveToSetpoint()
@@ -134,6 +140,11 @@ bool DriveTrain::IsDriveAtSetpoint()
    return m_isDriveAtSetpoint;
 }
 
+bool DriveTrain::IsRobotBalanced()
+{
+   return m_isRobotBalanced;
+}
+
 frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
 {
    return frc2::CommandPtr(
@@ -146,7 +157,7 @@ frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
             // no execute loop, arm subsystem calculates error
             [this] { this->DriveToSetpoint(); },
             // No end of command function
-            [this](bool interrupted) { 
+            [this](bool interrupted) {
                this->Stop();
                this->SetDrivetrainRamprate(kDriveRampRateTeleop);
                },
@@ -157,10 +168,40 @@ frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
    );
 }
 
+// sign of maxSpeed determines if we are starting backwards on the scale (does this matter?)
+frc2::CommandPtr DriveTrain::BalanceOnRampCmd(double maxSpeed)
+{
+   return frc2::CommandPtr(
+            frc2::FunctionalCommand(
+            [this] {},
+            [this, maxSpeed] 
+            {
+               double speed = maxSpeed * kAutoBalnace_kP * (this->m_pigeon.GetRoll());
+               this->m_drive.TankDrive(-speed, -speed);
+               frc::SmartDashboard::PutNumber("Auto balance output", speed);
+            },
+            [this](bool interrupted)
+            { 
+               this->Stop();
+            },
+            // command finishes when elevator within error margin
+            [this] {return m_isRobotBalanced;},
+            // Requires the arm
+            {this})
+   );
+}
+
+
+
 void DriveTrain::Periodic()
 {
-   m_driveError = m_driveSetpoint - GetDriveEncoderValue();
+   m_encoderPosition = m_DriveL1encoder.GetPosition();
+   m_encoderVelocity = m_DriveL1encoder.GetVelocity();
+   m_driveError = m_driveSetpoint - m_encoderPosition;
    m_isDriveAtSetpoint = ( fabs(m_driveError) <= kDriveAutoErrorMargin ? true : false );
+   m_isRobotBalanced = (   ((fabs(m_encoderVelocity) < kDriveBalanceWheelRotationMargin) 
+                        && (fabs(GyroGetPitch()) < kDriveBalanceAngleMargin)) ? true : false 
+                        );
    DisplayValues();
 }
 
@@ -178,12 +219,14 @@ void DriveTrain::DisplayValues()
 {
    frc::SmartDashboard::PutNumber("Gyro Yaw:", m_pigeon.GetYaw());
    frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
+   frc::SmartDashboard::PutNumber("Gyro Roll:", m_pigeon.GetRoll());
    frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
    frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
 
    frc::SmartDashboard::PutNumber("Drive Setpoint", m_driveSetpoint);
    frc::SmartDashboard::PutNumber("Drive Encoder", GetDriveEncoderValue());
    frc::SmartDashboard::PutNumber("Drive Error", m_driveError);
+   frc::SmartDashboard::PutNumber("Drive Encoder Speed", m_encoderVelocity);
    /*
    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
    double targets = table->GetNumber("tv",0.0);

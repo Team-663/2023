@@ -4,9 +4,11 @@
 
 #include "commands/ArmByJoystick.h"
 
-ArmByJoystick::ArmByJoystick(Arm *m_arm, frc2::CommandXboxController* m_xbox)//double m_leftY, double m_rightY, int m_pov)
+ArmByJoystick::ArmByJoystick(Arm *m_arm, frc2::CommandXboxController* m_xbox,frc::Joystick* m_joyL, frc::Joystick* m_joyR)//double m_leftY, double m_rightY, int m_pov)
     : m_arm(m_arm)
     ,m_xbox(m_xbox)
+    ,m_joyL(m_joyL)
+    ,m_joyR(m_joyR)
     //,m_leftY(m_leftY),m_rightY(m_rightY),m_pov(m_pov)
 {
    AddRequirements({m_arm});
@@ -43,8 +45,8 @@ void ArmByJoystick::Execute()
    bool x = m_xbox->GetXButton();
    bool y = m_xbox->GetYButton();
    bool start = m_xbox->GetStartButton();
-   frc::SmartDashboard::PutNumber("Arm Lefty:", leftY);
-   frc::SmartDashboard::PutNumber("Arm RightY:", rightY);
+   //frc::SmartDashboard::PutNumber("Arm Lefty:", leftY);
+   //frc::SmartDashboard::PutNumber("Arm RightY:", rightY);
 
    if (rightY > kXboxStickDeadzone || rightY < -kXboxStickDeadzone)
       rightYDead = rightY;
@@ -54,12 +56,22 @@ void ArmByJoystick::Execute()
       m_arm->ElevatorSetPIDState(false);
    }
    m_arm->SetElevatorSpeedManual(-rightYDead);
-
+/*
    if (leftJoystickY > kLeftJoystickSensitivity)
    {
       m_arm->Extend();
    }
    else if (leftJoystickY < -kLeftJoystickSensitivity)
+   {
+      m_arm->Retract();
+   }
+   */
+   if (m_joyL->GetTrigger() || m_joyR->GetTrigger())
+   {
+      m_arm->Extend();
+   }
+
+   if (m_joyL->GetRawButton(2) || m_joyR->GetRawButton(2))
    {
       m_arm->Retract();
    }
@@ -97,14 +109,14 @@ void ArmByJoystick::Execute()
 
    switch (dpad)
    {
-      case 270:
+      case 0:
          m_arm->UpdateWristSetpoint(kWristSetpointBack);
          break;
       case 90:
          m_arm->UpdateWristSetpoint(kWristSetpointStraight);
          break;
-      case 0:
-         m_arm->UpdateWristSetpoint(kWristSetpointUp);
+      case 180:
+         m_arm->UpdateWristSetpoint(kWristSetpointDown);
          break;
    }
 

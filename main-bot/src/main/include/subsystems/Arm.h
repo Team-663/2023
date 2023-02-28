@@ -19,6 +19,7 @@
 #include <frc2/command/FunctionalCommand.h>
 #include <frc2/command/InstantCommand.h>
 #include <rev/SparkMaxPIDController.h>
+#include <frc/controller/PIDController.h>
 
 using namespace ArmConstants;
 
@@ -33,6 +34,7 @@ public:
    bool IsElevatorAtUpPosition();
    bool IsElevatorAtDownPosition();
    bool IsElevatorAtSetpoint();
+   bool IsElevatorAtThisPosition(double pos);
    void ElevatorSetPIDState(bool enabled);
    void UpdateElevatorSetpoint(double target);
    void IncrementElevatorSetpoint(double inc);
@@ -40,6 +42,7 @@ public:
    void IncrementWristSetpoint(double incrVal);
    void UpdateWristSetpoint(double val);
    bool IsWristAtSetpoint();
+   bool IsWristAtThisPosition(double pos);
 
    void SetElevatorSpeedManual(double speed);
    double GetElevatorEncAbsolute();
@@ -62,6 +65,7 @@ public:
    rev::CANSparkMax m_wrist{kWrist_CANID, rev::CANSparkMaxLowLevel::MotorType::kBrushed};
    rev::SparkMaxAbsoluteEncoder m_wristEnc = m_wrist.GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle);
    rev::SparkMaxPIDController m_wristPID = m_wrist.GetPIDController();
+   frc::PIDController m_wristPID2{kWrist_P, kWrist_I, kWrist_D};
 
    WPI_TalonSRX m_elevator{kElevator_CANID};
    frc::DigitalInput m_elevatorLimDown{kElevatorLimitDown_DIOPIN};
@@ -80,6 +84,7 @@ public:
    double m_wristSpeed;
    bool m_isWristAtSetpoint;
    bool m_isWristInsideFrame;
+   double m_wristPIDOutput;
 
    bool m_isClawOpen;
    void InitElevatorPID();

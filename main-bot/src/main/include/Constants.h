@@ -17,7 +17,7 @@
 namespace AutoConstants
 {
    constexpr double kAutoBalanceMargin = 0.5;
-   constexpr double kAutoBalnace_kP = 0.2;
+   constexpr double kAutoBalnace_kP = 0.1;
    constexpr double kAutoBalance_kD = 0.01; // total guess
    constexpr double kAutoBalance_MaxOutput = 0.4;
 
@@ -56,13 +56,19 @@ namespace DriveTrainConstants
    constexpr double kAutoStraightSpeed = 0.6;
 
    constexpr double kDriveStraightKP = 0.01; // proportional gain coefficient for auto driving
+   constexpr double kEncTicsPerWheelRev = 9.26;
+   constexpr double kWheelCircumference = 18.85;
+   constexpr double kEncTicsPerInch =  kWheelCircumference / kEncTicsPerWheelRev;
 
    constexpr double kDriveRampRateTeleop = 0.0;
    constexpr double kDriveRampRateAuto = 0.5;
 
    constexpr double kDriveAutoErrorMargin = 100.0; // TODO: tune
    constexpr double kDriveAutoMaxOutput = 0.5;
-   constexpr double kDriveAutoProportionalDist = 1000.0; // only start proportional descent within this many error units
+   constexpr double kDriveAutoProportionalDist = 1000.0; // only start proportional descent within this many error 
+   
+   constexpr double kDriveBalanceAngleMargin = 1.0;
+   constexpr double kDriveBalanceWheelRotationMargin = 0.1; // TODO TEST
 
 }
 
@@ -80,10 +86,12 @@ namespace ArmConstants
    constexpr int kElevatorLimitDown_DIOPIN = 1;
    constexpr int kElevatorLimitUp_DIOPIN = 2;
 
-   constexpr double kWrist_P = 0.1;
+   constexpr double kWrist_P = 4.0;
    constexpr double kWrist_I = 0.0;
    constexpr double kWrist_D = 1.0;
    constexpr double kWrist_F = 0.0;
+   constexpr double kWristPIDMinOutput = -0.6;
+   constexpr double kWristPIDMaxOutput = 0.35;
    
 #if (WRIST_USE_DEG_CONVERSION == 1)
    constexpr double kWristPosConversion = 1.0; // turn 0-1 into degrees
@@ -92,40 +100,41 @@ namespace ArmConstants
 #endif
 
 // Setpoints for wrist
-   constexpr double kWristSetpointDown = 180 / kWristPosConversion;
-   constexpr double kWristSetpointStraight = 150 / kWristPosConversion;
+   constexpr double kWristSetpointDown = 185 / kWristPosConversion;
+   constexpr double kWristSetpointStraight = 160 / kWristPosConversion;
    constexpr double kWristSetpointUp =  85 / kWristPosConversion;
    constexpr double kWristSetpointBack = 55 / kWristPosConversion;
    constexpr double kWristSoftLimReverse = 60  / kWristPosConversion;
-   constexpr double kWristSoftLimForward = 180 /  kWristPosConversion;
+   constexpr double kWristSoftLimForward = 190 /  kWristPosConversion;
    constexpr double kWristInFrameAngle = 90  / kWristPosConversion;
 
    
    constexpr double kWristAllowedError = 10 / kWristPosConversion;
    constexpr double kWristJoyRotateScaler = 10.0;  // NEED TO TUNE: rate of turn per joystick scale
    constexpr double kWristSpeedScaleFactor = 0.5;
-   constexpr double kWristUpSpeed = 0.40;
-   constexpr double kWristDownSpeed = 0.20;
+   constexpr double kWristUpSpeed = 0.50;
+   constexpr double kWristDownSpeed = 0.30;
 
    constexpr double kTriggerSensitivity = 0.3; //Nathan added this
    constexpr double kLeftJoystickSensitivity = 0.85;
 
-   constexpr double kElevatorPowerLimit = 0.95;
+   constexpr double kElevatorPowerLimit = 1.0; // was 0.95
    constexpr double kElevatorPowerLimitDown = 0.35;
    constexpr bool   kElevatorIsMotorInverted = false;
-   constexpr double kElevatorAllowedError = 250.0;
+   constexpr double kElevatorAllowedError = 500.0;
+   constexpr double kElevatorExtraErrorMargin = 150.0;
    constexpr double kElevatorEncDistPerRev = 5.62345; // Inches per rev of 15T sprocket (1.79 PD)
    constexpr double kElevatorTicsPerInch = 727.214;
-   constexpr double kElevator_P = 0.2;
-   constexpr double kElevator_I = 0.00015;
-   constexpr double kElevator_D = 2.0;
+   constexpr double kElevator_P = 0.65; // was .225, .65 seems ok
+   constexpr double kElevator_I = 0.0; //was 0
+   constexpr double kElevator_D = 4.0;
    constexpr double kElevator_F = 0.0;
    constexpr int kTimeoutMs = 30;
    constexpr int kElevatorPIDID = 0;
 
-   constexpr int kElevatorPos_HIGH = 24500.0;
+   constexpr int kElevatorPos_HIGH = 22500.0; // was 24500 before new hardstop
    constexpr int kElevatorPos_MID = 10000.0;
-   constexpr int kElevatorPos_LOW = 100;
+   constexpr int kElevatorPos_LOW = 400;
    constexpr int kElevatorPos_DOWN = 0;
 
 }

@@ -10,6 +10,7 @@
 #include <subsystems/Arm.h>
 #include "frc/smartdashboard/SmartDashboard.h"
 #include <frc2/command/button/CommandXboxController.h>
+#include <frc/Joystick.h>
 
 /**
  * An example command.
@@ -23,7 +24,7 @@ class ArmByJoystick
 {
 public:
    // ArmByJoystick(Arm *m_arm, double m_leftY, double m_rightY, int m_pov);
-   ArmByJoystick(Arm *m_arm, frc2::CommandXboxController *m_xbox);
+   ArmByJoystick(Arm *m_arm, frc2::CommandXboxController* m_xbox,frc::Joystick* m_joyL, frc::Joystick* m_joyR);
    void Initialize() override;
 
    void Execute() override;
@@ -35,6 +36,8 @@ public:
 private:
    Arm *m_arm;
    frc2::CommandXboxController *m_xbox;
+   frc::Joystick* m_joyL;
+   frc::Joystick* m_joyR;
    double m_leftY;
    double m_rightY;
    int m_pov;

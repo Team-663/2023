@@ -5,6 +5,7 @@
 #include "RobotContainer.h"
 
 #include <frc2/command/button/Trigger.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
@@ -12,22 +13,14 @@
 RobotContainer* RobotContainer::m_robotContainer = NULL;
 
 RobotContainer::RobotContainer() {
-  frc::SmartDashboard::PutNumber("TEST NUM", 123);
-  m_chooser.SetDefaultOption("AUTO: Drive Forward", new DriveStraightDistance(&m_drivetrain));
-  //m_chooser.AddOption("AUTO: Drive Backwards", new DriveStraightDistance(&m_driveTrain, &m_shooter, -4, 0.6, false, false, 0.0));
-  //m_chooser.AddOption("AUTO: Shoot and Back",  new ShootAndBackup(&m_shooter, &m_driveTrain));
-  //m_chooser.SetDefaultOption("AUTO: 2 Ball", &m_autoTwoBall);
-  
-  frc::SmartDashboard::PutData("Auto Balance", new AutoBalance(&m_drivetrain));
-  //frc::SmartDashboard::PutData("Auto Rotate To Tag", new RotateToTag(&m_driveTrain, false));
-  frc::SmartDashboard::PutData("Move Elevator To Top", new MoveElevatorToPoint(&m_arm, kElevatorPos_HIGH, 0.0));
-  frc::SmartDashboard::PutData("Move Wrist Straight", new MoveWristToPoint(&m_arm, kWristSetpointStraight, 0.0));
-  frc2::CommandPtr m_elevEncReset = m_arm.ResetElevatorEncoderCommand();
+  //m_chooser.SetDefaultOption("AUTO: Drive Forward", new DriveStraightDistance(&m_drivetrain));
+   //m_chooser.AddOption("Drive Forward 36in", m_drive36cmd.get());
+   m_chooser.SetDefaultOption("Score", m_scoreAuto.get());
+   frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser);
+   //frc::SmartDashboard::PutData(&m_chooser);
 
-  frc::SmartDashboard::PutData("Reset Elev Encoder", m_elevEncReset.get());
-  
-   frc::SmartDashboard::PutData(&m_arm);
-   frc::SmartDashboard::PutData(&m_drivetrain);
+   //frc::SmartDashboard::PutData(&m_arm);
+   //frc::SmartDashboard::PutData(&m_drivetrain);
 
   m_drivetrain.SetDefaultCommand(frc2::cmd::Run(
       [this] {
@@ -37,20 +30,7 @@ RobotContainer::RobotContainer() {
       },
       {&m_drivetrain}));
    //m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, m_xbox.GetLeftY(), m_xbox.GetRightY(), m_xbox.GetPOV()));
-   m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, &m_xbox));
-/*
-  m_arm.SetDefaultCommand(frc2::cmd::Run(
-      [this] {
-         m_arm.SetElevatorSpeedManual(m_xbox.GetRightY()); 
-      }, 
-      {&m_arm}));
-
-  m_wrist.SetDefaultCommand(frc2::cmd::Run(
-      [this] {
-         m_wrist.MoveWrist(m_xbox.GetLeftY()); 
-      }, 
-      {&m_wrist}));
-*/
+   m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, &m_xbox, &m_joyL, &m_joyR));
   // Configure the button bindings
   ConfigureBindings();
 }
@@ -64,6 +44,8 @@ RobotContainer* RobotContainer::GetInstance()
 }
 
 void RobotContainer::ConfigureBindings() {
+
+   //m_xbox.X().OnTrue(m_drivetrain.BalanceOnRampCmd(0.4));
   // TODO: enable this when ready
   //m_xbox.X().WhileTrue(RotateToTag(&m_drivetrain, &m_camera, true).ToPtr());
 
