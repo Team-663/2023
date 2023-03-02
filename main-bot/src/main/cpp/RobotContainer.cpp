@@ -15,7 +15,9 @@ RobotContainer* RobotContainer::m_robotContainer = NULL;
 RobotContainer::RobotContainer() {
   //m_chooser.SetDefaultOption("AUTO: Drive Forward", new DriveStraightDistance(&m_drivetrain));
    //m_chooser.AddOption("Drive Forward 36in", m_drive36cmd.get());
-   m_chooser.SetDefaultOption("Score", m_scoreAuto.get());
+   m_chooser.AddOption("Score", m_scoreAuto.get());
+   m_chooser.AddOption("Score and Backup 15ft", m_scoreBackAuto.get());
+   m_chooser.SetDefaultOption("Drive Backwards Auto 60in", m_driveBackwardscmd.get());
    frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser);
    //frc::SmartDashboard::PutData(&m_chooser);
 

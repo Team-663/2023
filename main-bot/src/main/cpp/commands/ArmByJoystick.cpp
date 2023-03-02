@@ -30,7 +30,7 @@ void ArmByJoystick::Execute()
    bool bumpR = robot->GetXbox()->GetRightBumper();
    int dpad = robot->GetXbox()->GetPOV();
    */
-   double leftY = m_xbox->GetLeftY();
+   //double leftY = m_xbox->GetLeftY();
    double rightY = m_xbox->GetRightY();
    double rightYDead = 0.0;
    int dpad = m_xbox->GetPOV();
@@ -38,7 +38,7 @@ void ArmByJoystick::Execute()
    bool bumpR = m_xbox->GetRightBumper();
    //double triggerL = m_xbox->GetLeftTriggerAxis();
    double triggerR = m_xbox->GetRightTriggerAxis();
-   double leftJoystickY = m_xbox->GetLeftY();
+   //double leftJoystickY = m_xbox->GetLeftY();
    //double leftJoystickX = m_xbox->GetLeftX();
    bool a = m_xbox->GetAButton();
    bool b = m_xbox->GetBButton();
@@ -117,6 +117,9 @@ void ArmByJoystick::Execute()
          break;
       case 180:
          m_arm->UpdateWristSetpoint(kWristSetpointDown);
+         break;
+      case 270:
+         m_arm->UpdateWristSetpoint(kWristSetpointPickup);
          break;
    }
 

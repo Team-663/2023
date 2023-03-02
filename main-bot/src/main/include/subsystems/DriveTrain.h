@@ -45,6 +45,7 @@ public:
    void DriveToSetpoint();
    void SetDrivetrainRamprate(double rate);
    bool IsRobotBalanced();
+   void ResetDriveEncoders();
 
    frc2::CommandPtr DriveStraightCmd(double dist, double timeout);
    frc2::CommandPtr BalanceOnRampCmd(double maxSpeed);
@@ -70,6 +71,7 @@ private:
    frc::DifferentialDrive m_drive{m_leftMotors, m_rightMotors};
 
    rev::SparkMaxRelativeEncoder m_DriveL1encoder{m_driveMotorL1.GetEncoder()};
+   rev::SparkMaxRelativeEncoder m_DriveR1encoder{m_driveMotorR1.GetEncoder()};
 
    double m_driveLVal;
    double m_driveRVal;

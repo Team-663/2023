@@ -15,7 +15,9 @@ namespace autos {
 /**
  * Example static factory for an autonomous command.
  */
+frc2::CommandPtr DriveDistanceCmd(DriveTrain * drivetrain, double dist);
 frc2::CommandPtr AutoScoreOnMidCmd(Arm* arm, DriveTrain *drivetrain);
+frc2::CommandPtr AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain, double dist);
 
 frc2::CommandPtr ExampleAuto(ExampleSubsystem* subsystem);
 }  // namespace autos

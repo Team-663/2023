@@ -13,6 +13,15 @@ frc2::CommandPtr autos::ExampleAuto(ExampleSubsystem* subsystem) {
                              ExampleCommand(subsystem).ToPtr());
 }
 
+frc2::CommandPtr autos::DriveDistanceCmd(DriveTrain * drivetrain, double dist)
+{
+   return frc2::cmd::Sequence(
+      drivetrain->DriveStraightCmd(dist, 0.5)
+      
+   );
+}
+
+
 frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
 {
    return frc2::cmd::Sequence(
@@ -30,4 +39,13 @@ frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
       ,frc2::cmd::Wait(0.5_s)
       ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
       );
+}
+
+frc2::CommandPtr autos::AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain, double dist)
+{
+   return frc2::cmd::Sequence(
+      AutoScoreOnMidCmd(arm, drivetrain)
+      ,DriveDistanceCmd(drivetrain, dist)
+      
+   );
 }

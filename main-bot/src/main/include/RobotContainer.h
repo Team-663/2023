@@ -64,8 +64,9 @@ public:
    Arm m_arm;
    Camera m_camera;
    static RobotContainer* m_robotContainer;
-   //frc2::CommandPtr m_drive36cmd = m_drivetrain.DriveStraightCmd(36.0, 5.0);
+   frc2::CommandPtr m_driveBackwardscmd = autos::DriveDistanceCmd(&m_drivetrain, -60.0);
    frc2::CommandPtr m_scoreAuto = autos::AutoScoreOnMidCmd(&m_arm, &m_drivetrain);
+   frc2::CommandPtr m_scoreBackAuto = autos::AutoScoreAndBackAwayCmd(&m_arm, &m_drivetrain, -(12.0*15.0));
    frc::SendableChooser<frc2::Command*> m_chooser;
    
   void ConfigureBindings();

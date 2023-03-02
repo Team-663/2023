@@ -18,6 +18,8 @@ DriveTrain::DriveTrain() //:
 {
    m_leftMotors.SetInverted(true);
    m_DriveL1encoder.SetPositionConversionFactor(kEncTicsPerInch);
+   m_driveSetpoint = 0.0;
+   
 }
 
 // This method will be called once per scheduler run
@@ -110,9 +112,9 @@ double DriveTrain::GetDriveEncoderVelocity()
 
 void DriveTrain::DriveToSetpoint()
 {
-   int sign = 1;
+   int sign = -1;
    if (m_driveError < 0)
-      sign = -1;
+      sign = 1;
    double driveAutoOutput = 0;
 
    double errorMag = fabs(m_driveError);
@@ -126,7 +128,7 @@ void DriveTrain::DriveToSetpoint()
       driveAutoOutput = sign * (errorMag / kDriveAutoProportionalDist) * kDriveAutoMaxOutput;
    }
    // TODO: enable
-   //m_drive.ArcadeDrive(driveAutoOutput, 0.0);
+   m_drive.ArcadeDrive(driveAutoOutput, 0.0);
    frc::SmartDashboard::PutNumber("Drive Auto Output:", driveAutoOutput);
 }
 
@@ -145,12 +147,19 @@ bool DriveTrain::IsRobotBalanced()
    return m_isRobotBalanced;
 }
 
+void DriveTrain::ResetDriveEncoders()
+{
+   m_DriveL1encoder.SetPosition(0.0);
+   m_DriveR1encoder.SetPosition(0.0);
+}
+
 frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
 {
    return frc2::CommandPtr(
             frc2::FunctionalCommand(
             // Update setpoint once
             [this, dist] {
+                this->ResetDriveEncoders();
                 this->UpdateDriveSetpoint(dist);
                 this->SetDrivetrainRamprate(kDriveRampRateAuto);
              },
@@ -226,7 +235,9 @@ void DriveTrain::DisplayValues()
    frc::SmartDashboard::PutNumber("Drive Setpoint", m_driveSetpoint);
    frc::SmartDashboard::PutNumber("Drive Encoder", GetDriveEncoderValue());
    frc::SmartDashboard::PutNumber("Drive Error", m_driveError);
-   frc::SmartDashboard::PutNumber("Drive Encoder Speed", m_encoderVelocity);
+   frc::SmartDashboard::PutNumber("DriveLSpeed", m_encoderVelocity);
+   frc::SmartDashboard::PutNumber("DriveRSpeed", m_DriveR1encoder.GetVelocity());
+   
    /*
    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
    double targets = table->GetNumber("tv",0.0);
