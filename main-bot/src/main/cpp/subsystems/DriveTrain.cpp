@@ -19,7 +19,7 @@ DriveTrain::DriveTrain() //:
    m_leftMotors.SetInverted(true);
    m_DriveL1encoder.SetPositionConversionFactor(kEncTicsPerInch);
    m_driveSetpoint = 0.0;
-   
+   GyroSetTargetAngleHere();
 }
 
 // This method will be called once per scheduler run
@@ -44,6 +44,11 @@ void DriveTrain::GyroResetHeading()
    // SetFusedHeading(0.0);
 }
 
+void DriveTrain::GyroSetTargetAngleHere()
+{
+   GyroSetTargetAngle(m_pigeon.GetYaw());
+}
+
 void DriveTrain::GyroSetTargetAngle(double tgtAngle)
 {
    m_tgtAngle = tgtAngle;
@@ -56,7 +61,7 @@ double DriveTrain::GyroGetPitch()
 
 void DriveTrain::GyroTurnToTargetAngle()
 {
-   m_gyroTurnError = m_tgtAngle - m_pigeon.GetYaw();
+   
 
    if (fabs(m_gyroTurnError) > kGyroRotateAngleBand)
    {
@@ -89,13 +94,14 @@ bool DriveTrain::GyroIsAtHeading(double band)
    }
 }
 
-void DriveTrain::GyroDriveStraight(double speed, double angle)
+void DriveTrain::GyroDriveStraight(double speed)
 {
-   double turn = kGyroDriveKP * -m_pigeon.GetYaw();
-   if (speed > 0.0)
-   {
+   double turn = kGyroDriveKP * -m_gyroTurnError;
+   //kGyroDriveStraightMaxSpeed
+   //if (speed > 0.0)
+   //{
       m_drive.ArcadeDrive(speed, turn, false);
-   }
+   //}
 
    // TODO : do we need backwards??
 }
@@ -199,7 +205,37 @@ frc2::CommandPtr DriveTrain::BalanceOnRampCmd(double maxSpeed)
             {this})
    );
 }
+/*
+frc2::CommandPtr DriveTrain::DriveByJoystickCmd(frc::Joystick* m_joyL, frc::Joystick* m_joyR)
+{
+   return frc2::CommandPtr(
+            frc2::FunctionalCommand(
+            [this] {},
+            [this, m_joyL, m_joyR] 
+            {
+               //double speed = maxSpeed * kAutoBalnace_kP * (this->m_pigeon.GetRoll());
+               if (m_joyL->GetRawButton(2))
+               {
 
+               }
+               else
+               {
+                  this->m_drive
+               }
+               this->m_drive.TankDrive(-speed, -speed);
+               frc::SmartDashboard::PutNumber("Auto balance output", speed);
+            },
+            [this](bool interrupted)
+            { 
+               this->Stop();
+            },
+            // command finishes when elevator within error margin
+            [this] {return m_isRobotBalanced;},
+            // Requires the arm
+            {this})
+   );
+}
+*/
 
 
 void DriveTrain::Periodic()
@@ -211,6 +247,9 @@ void DriveTrain::Periodic()
    m_isRobotBalanced = (   ((fabs(m_encoderVelocity) < kDriveBalanceWheelRotationMargin) 
                         && (fabs(GyroGetPitch()) < kDriveBalanceAngleMargin)) ? true : false 
                         );
+
+   m_gyroAngle = m_pigeon.GetYaw();
+   m_gyroTurnError = m_tgtAngle - m_pigeon.GetYaw();
    DisplayValues();
 }
 
@@ -226,9 +265,12 @@ void DriveTrain::SetDrivetrainRamprate(double rate)
 
 void DriveTrain::DisplayValues()
 {
-   frc::SmartDashboard::PutNumber("Gyro Yaw:", m_pigeon.GetYaw());
-   frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
+   //frc::SmartDashboard::PutNumber("Gyro angle Raw:", m_pigeon.Getgy);
+   frc::SmartDashboard::PutNumber("Gyro Angle", m_gyroAngle);
+   //frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
    frc::SmartDashboard::PutNumber("Gyro Roll:", m_pigeon.GetRoll());
+   frc::SmartDashboard::PutNumber("Gyro Target:", m_tgtAngle);
+   frc::SmartDashboard::PutNumber("Gyro Error:", m_gyroTurnError);
    frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
    frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
 

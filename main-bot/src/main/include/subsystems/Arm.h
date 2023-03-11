@@ -43,6 +43,7 @@ public:
    void UpdateWristSetpoint(double val);
    bool IsWristAtSetpoint();
    bool IsWristAtThisPosition(double pos);
+   void SetWristSetpointHere();
 
    void SetElevatorSpeedManual(double speed);
    double GetElevatorEncAbsolute();

@@ -56,6 +56,7 @@ void Robot::TeleopInit() {
   }
 
   m_container.SetMotorsToTeleopSettings();
+  m_container.SetWristDefaults();
 
 }
 

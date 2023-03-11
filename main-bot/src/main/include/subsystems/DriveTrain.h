@@ -34,8 +34,9 @@ public:
 
    void GyroResetHeading();
    void GyroSetTargetAngle(double tgtAngle);
+   void GyroSetTargetAngleHere();
    void GyroTurnToTargetAngle();
-   void GyroDriveStraight(double speed, double angle);
+   void GyroDriveStraight(double speed);
    bool GyroIsAtHeading(double band);
 
    double GetDriveEncoderValue();
@@ -81,6 +82,7 @@ private:
    double m_driveError;
    double m_isDriveAtSetpoint;
    double m_isRobotBalanced;
+   double m_gyroAngle;
 
    double m_encoderPosition;
    double m_encoderVelocity;

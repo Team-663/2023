@@ -12,6 +12,8 @@
 
 #include "RobotContainer.h"
 
+#define USE_LIMELIGHT 0
+
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;

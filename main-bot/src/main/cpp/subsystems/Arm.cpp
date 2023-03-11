@@ -23,6 +23,10 @@ void Arm::ResetWristEncoder()
 {
    m_wristEnc.SetZeroOffset(m_wristEnc.GetPosition() / kWristPosConversion);
 }
+void Arm::SetWristSetpointHere()
+{
+   m_wristSetpoint = m_wristEnc.GetPosition();
+}
 
 // This method will be called once per schedule
 void Arm::Extend()
@@ -316,7 +320,7 @@ void Arm::InitMotors()
    m_wrist.SetInverted(true); // TODO: update
    m_wristEnc.SetPositionConversionFactor(1.0);
    ResetWristEncoder();
-   m_wristSetpoint = m_wristEnc.GetPosition();
+   //m_wristSetpoint = m_wristEnc.GetPosition();
 
 
    m_elevator.SetNeutralMode(motorcontrol::NeutralMode::Brake);

@@ -11,13 +11,17 @@
 #include <frc/Joystick.h>
 #include <subsystems/Arm.h>
 #include <subsystems/DriveTrain.h>
+#include "cameraserver/CameraServer.h"
+#if (USE_LIMELIGHT == 1)
 #include <subsystems/Camera.h>
+#endif
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
 #include "Constants.h"
 #include "commands/Autos.h"
 
 #include <commands/ArmByJoystick.h>
+#include <commands/DriveByJoystick.h>
 #include <commands/DriveStraightDistance.h>
 #include <commands/AutoBalance.h>
 #include <commands/RotateToTag.h>
@@ -44,6 +48,7 @@ public:
    frc2::Command* GetAutonomousCommand();
 
    void SetMotorsToTeleopSettings();
+   void SetWristDefaults();
 
    enum E_DPAD_POV {
       DPAD_UP = 0,
@@ -62,12 +67,15 @@ public:
    // The robot's subsystems are defined here...
    DriveTrain m_drivetrain;
    Arm m_arm;
+#if (USE_LIMELIGHT == 1)
    Camera m_camera;
+#endif
    static RobotContainer* m_robotContainer;
    frc2::CommandPtr m_driveBackwardscmd = autos::DriveDistanceCmd(&m_drivetrain, -60.0);
    frc2::CommandPtr m_scoreAuto = autos::AutoScoreOnMidCmd(&m_arm, &m_drivetrain);
    frc2::CommandPtr m_scoreBackAuto = autos::AutoScoreAndBackAwayCmd(&m_arm, &m_drivetrain, -(12.0*15.0));
    frc::SendableChooser<frc2::Command*> m_chooser;
+   //frc2::CommandPtr m_driveByJoystick = DriveTrain::DriveByJoystickCmd(&m_joyL, &m_joyR);
    
   void ConfigureBindings();
   double Deadzone(double input);

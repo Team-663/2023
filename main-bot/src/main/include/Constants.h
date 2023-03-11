@@ -52,6 +52,7 @@ namespace DriveTrainConstants
    constexpr double kGyroRotateAngleBandWide = 6.0; // if all else fails, be somewhere close...
    constexpr double kGyroMaxTurnRate = 0.45;        // set to .55 for carpet
 
+   constexpr double kGyroDriveStraightMaxSpeed = 1.0;
    constexpr double kGyroDriveKP = 0.01;
    constexpr double kAutoStraightSpeed = 0.6;
 

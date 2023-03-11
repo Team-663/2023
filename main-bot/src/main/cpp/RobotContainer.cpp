@@ -13,17 +13,20 @@
 RobotContainer* RobotContainer::m_robotContainer = NULL;
 
 RobotContainer::RobotContainer() {
-  //m_chooser.SetDefaultOption("AUTO: Drive Forward", new DriveStraightDistance(&m_drivetrain));
-   //m_chooser.AddOption("Drive Forward 36in", m_drive36cmd.get());
+
+   frc::CameraServer::StartAutomaticCapture();
    m_chooser.AddOption("Score", m_scoreAuto.get());
    m_chooser.AddOption("Score and Backup 15ft", m_scoreBackAuto.get());
    m_chooser.SetDefaultOption("Drive Backwards Auto 60in", m_driveBackwardscmd.get());
-   frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser);
+   frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser).WithSize(3, 1);
+
+   //frc::Shuffleboard::GetTab("Autonomous").AddCamera("ClawCam", "USB Camera 0");
    //frc::SmartDashboard::PutData(&m_chooser);
 
    //frc::SmartDashboard::PutData(&m_arm);
    //frc::SmartDashboard::PutData(&m_drivetrain);
-
+   m_drivetrain.SetDefaultCommand(DriveByJoystick(&m_drivetrain, &m_joyL, &m_joyR));
+/*
   m_drivetrain.SetDefaultCommand(frc2::cmd::Run(
       [this] {
         //m_driveTrain.TankDrive(-m_xbox.GetLeftY(),
@@ -31,6 +34,7 @@ RobotContainer::RobotContainer() {
         m_drivetrain.TankDrive(m_joyL.GetY(), m_joyR.GetY());
       },
       {&m_drivetrain}));
+      */
    //m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, m_xbox.GetLeftY(), m_xbox.GetRightY(), m_xbox.GetPOV()));
    m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, &m_xbox, &m_joyL, &m_joyR));
   // Configure the button bindings
@@ -65,6 +69,11 @@ void RobotContainer::ConfigureBindings() {
 void RobotContainer::SetMotorsToTeleopSettings()
 {
    m_drivetrain.SetDrivetrainRamprate(kDriveRampRateTeleop);
+}
+
+void RobotContainer::SetWristDefaults()
+{
+   m_arm.SetWristSetpointHere();
 }
 
 //frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
