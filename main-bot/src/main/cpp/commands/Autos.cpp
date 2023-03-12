@@ -17,10 +17,20 @@ frc2::CommandPtr autos::DriveDistanceCmd(DriveTrain * drivetrain, double dist)
 {
    return frc2::cmd::Sequence(
       drivetrain->DriveStraightCmd(dist, 0.5)
-      
    );
 }
 
+frc2::CommandPtr autos::BalanceCmd(DriveTrain * drivetrain)
+{
+   return frc2::cmd::Sequence(
+      drivetrain->BalanceOnRampCmd()
+   );
+}
+
+frc2::CommandPtr autos::RotateRobotCmd(DriveTrain* drivetrain, double angle)
+{
+   return frc2::cmd::Sequence(drivetrain->RotateToAngleCmd(angle));
+}
 
 frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
 {

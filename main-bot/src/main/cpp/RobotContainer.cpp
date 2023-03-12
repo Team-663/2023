@@ -15,9 +15,11 @@ RobotContainer* RobotContainer::m_robotContainer = NULL;
 RobotContainer::RobotContainer() {
 
    frc::CameraServer::StartAutomaticCapture();
+   m_chooser.SetDefaultOption("Score and Backup 15ft", m_scoreBackAuto.get());
    m_chooser.AddOption("Score", m_scoreAuto.get());
-   m_chooser.AddOption("Score and Backup 15ft", m_scoreBackAuto.get());
-   m_chooser.SetDefaultOption("Drive Backwards Auto 60in", m_driveBackwardscmd.get());
+   m_chooser.AddOption("Rotate180", m_rotate180Auto.get());
+   m_chooser.AddOption("Drive Backwards 5ft", m_driveBackwardscmd.get());
+   m_chooser.AddOption("Balance", m_BalanceAuto.get());
    frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser).WithSize(3, 1);
 
    //frc::Shuffleboard::GetTab("Autonomous").AddCamera("ClawCam", "USB Camera 0");
@@ -69,6 +71,7 @@ void RobotContainer::ConfigureBindings() {
 void RobotContainer::SetMotorsToTeleopSettings()
 {
    m_drivetrain.SetDrivetrainRamprate(kDriveRampRateTeleop);
+   m_drivetrain.SetMotorMode(false);
 }
 
 void RobotContainer::SetWristDefaults()

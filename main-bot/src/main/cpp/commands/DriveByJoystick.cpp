@@ -26,6 +26,12 @@ void DriveByJoystick::Execute()
    {
       m_drivetrain->GyroSetTargetAngleHere();
    }
+   
+   if (m_joyR->GetRawButtonReleased(6))
+   {
+      m_drivetrain->ToggleMotorNeutralMode();
+   }
+   
    if (m_joyL->GetRawButton(4))
    {
       m_drivetrain->GyroDriveStraight(avg);

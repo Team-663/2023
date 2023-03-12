@@ -18,6 +18,7 @@ namespace autos {
 frc2::CommandPtr DriveDistanceCmd(DriveTrain * drivetrain, double dist);
 frc2::CommandPtr AutoScoreOnMidCmd(Arm* arm, DriveTrain *drivetrain);
 frc2::CommandPtr AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain, double dist);
-
+frc2::CommandPtr RotateRobotCmd(DriveTrain* drivetrain, double angle);
+frc2::CommandPtr BalanceCmd(DriveTrain * drivetrain);
 frc2::CommandPtr ExampleAuto(ExampleSubsystem* subsystem);
 }  // namespace autos

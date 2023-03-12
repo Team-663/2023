@@ -149,4 +149,10 @@ namespace AutoConstants
    constexpr double autoBalnace_kP = 0.2;
    constexpr double autoBalance_kD = 0.01; // total guess
    constexpr double autoBalance_MaxOutput = 0.4;
+
+   constexpr double kAutoBalananceDriveSpeed = 0.18;
+   constexpr double kAutoRobotOnRampRollAngle = 16.0;
+   constexpr double kAutoRobotBalanceAngleStop = 11.5;
+
+   constexpr double kAutoScore_BackDistance = -14.0 * 12.0;
 };

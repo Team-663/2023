@@ -30,14 +30,21 @@ public:
    void Periodic() override;
    void TankDrive(double l, double r);
    void Stop();
+   void SetMotorMode(bool brake);
+   void ToggleMotorNeutralMode();
    double GyroGetPitch();
+   double GyroGetRoll(bool inverse);
 
    void GyroResetHeading();
    void GyroSetTargetAngle(double tgtAngle);
    void GyroSetTargetAngleHere();
+   void GyroSetTargetAngleOffset(double offset);
    void GyroTurnToTargetAngle();
    void GyroDriveStraight(double speed);
    bool GyroIsAtHeading(double band);
+
+   void ResetRobotMaxRoll();
+   bool HasRobotGoneUpRamp();
 
    double GetDriveEncoderValue();
    double GetDriveEncoderVelocity();
@@ -49,7 +56,8 @@ public:
    void ResetDriveEncoders();
 
    frc2::CommandPtr DriveStraightCmd(double dist, double timeout);
-   frc2::CommandPtr BalanceOnRampCmd(double maxSpeed);
+   frc2::CommandPtr BalanceOnRampCmd();
+   frc2::CommandPtr RotateToAngleCmd(double angle);
 
 private:
    rev::CANSparkMax m_driveMotorL1{kDriveNEOL1_CANID, rev::CANSparkMax::MotorType::kBrushless};
@@ -82,10 +90,13 @@ private:
    double m_driveError;
    double m_isDriveAtSetpoint;
    double m_isRobotBalanced;
+   bool m_robotOnRamp;
+   double m_maxRoll;
    double m_gyroAngle;
 
    double m_encoderPosition;
    double m_encoderVelocity;
+   bool m_isBrakeMode;
 
    void DisplayValues();
 };

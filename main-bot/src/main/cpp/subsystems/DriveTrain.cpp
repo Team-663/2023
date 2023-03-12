@@ -37,6 +37,45 @@ void DriveTrain::Stop()
    TankDrive(0, 0);
 }
 
+void DriveTrain::ToggleMotorNeutralMode()
+{
+   if (m_isBrakeMode)
+   {
+      SetMotorMode(false);
+   }
+   else
+   {
+      SetMotorMode(true);
+   }
+}
+
+void DriveTrain::SetMotorMode(bool brake)
+{
+   if (brake)
+   {
+      m_driveMotorL1.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+      m_driveMotorL2.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+      m_driveMotorL3.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+
+      m_driveMotorR1.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+      m_driveMotorR2.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+      m_driveMotorR3.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+      m_isBrakeMode = true;
+   }
+   else
+   {
+      m_driveMotorL1.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_driveMotorL2.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_driveMotorL3.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+
+      m_driveMotorR1.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_driveMotorR2.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_driveMotorR3.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+      m_isBrakeMode = false;
+   }
+
+}
+
 void DriveTrain::GyroResetHeading()
 {
    m_pigeon.SetYawToCompass();
@@ -54,9 +93,22 @@ void DriveTrain::GyroSetTargetAngle(double tgtAngle)
    m_tgtAngle = tgtAngle;
 }
 
+void DriveTrain::GyroSetTargetAngleOffset(double offset)
+{
+   m_tgtAngle += offset;
+}
+
 double DriveTrain::GyroGetPitch()
 {
    return m_pigeon.GetPitch();
+}
+
+double DriveTrain::GyroGetRoll(bool inverse)
+{
+   if (inverse)
+      return -m_pigeon.GetRoll();
+   else
+      return m_pigeon.GetRoll();
 }
 
 void DriveTrain::GyroTurnToTargetAngle()
@@ -183,60 +235,71 @@ frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
    );
 }
 
+frc2::CommandPtr DriveTrain::RotateToAngleCmd(double angle)
+{
+   return frc2::CommandPtr(
+      frc2::FunctionalCommand(
+         [this, angle] {
+               this->GyroSetTargetAngleHere();
+               this->GyroSetTargetAngleOffset(angle);
+            },
+            [this] 
+            {
+               this->GyroTurnToTargetAngle();
+            },
+            [this](bool interrupted) {this->Stop();},
+            [this] {return this->GyroIsAtHeading(kGyroRotateAngleBand);},
+            {this})
+   );
+}
+
+void DriveTrain::ResetRobotMaxRoll()
+{
+   m_maxRoll = 0.0;
+}
+
+bool DriveTrain::HasRobotGoneUpRamp()
+{
+   m_maxRoll = (m_maxRoll > GyroGetRoll(true) ? m_maxRoll : GyroGetRoll(true)); 
+   if (m_maxRoll > kAutoRobotOnRampRollAngle)
+      m_robotOnRamp = true;
+   else
+      m_robotOnRamp = false;
+
+   return m_robotOnRamp;
+}
+
 // sign of maxSpeed determines if we are starting backwards on the scale (does this matter?)
-frc2::CommandPtr DriveTrain::BalanceOnRampCmd(double maxSpeed)
+frc2::CommandPtr DriveTrain::BalanceOnRampCmd()
 {
    return frc2::CommandPtr(
             frc2::FunctionalCommand(
-            [this] {},
-            [this, maxSpeed] 
+            [this] {
+               this->SetMotorMode(true);
+               this->ResetRobotMaxRoll();
+            },
+            [this] 
             {
-               double speed = maxSpeed * kAutoBalnace_kP * (this->m_pigeon.GetRoll());
-               this->m_drive.TankDrive(-speed, -speed);
-               frc::SmartDashboard::PutNumber("Auto balance output", speed);
+               this->m_drive.TankDrive(kAutoBalananceDriveSpeed, kAutoBalananceDriveSpeed, false);
+               frc::SmartDashboard::PutNumber("AutoSpeed", this->m_driveMotorL1.Get());
+               // TODO: use 
             },
             [this](bool interrupted)
-            { 
+            {
                this->Stop();
+               //this->SetMotorMode(false);
             },
             // command finishes when elevator within error margin
-            [this] {return m_isRobotBalanced;},
+            [this] {
+               if (this->HasRobotGoneUpRamp() && GyroGetRoll(true) < kAutoRobotBalanceAngleStop)
+                  return true;
+               else 
+                  return false;
+               },
             // Requires the arm
             {this})
    );
 }
-/*
-frc2::CommandPtr DriveTrain::DriveByJoystickCmd(frc::Joystick* m_joyL, frc::Joystick* m_joyR)
-{
-   return frc2::CommandPtr(
-            frc2::FunctionalCommand(
-            [this] {},
-            [this, m_joyL, m_joyR] 
-            {
-               //double speed = maxSpeed * kAutoBalnace_kP * (this->m_pigeon.GetRoll());
-               if (m_joyL->GetRawButton(2))
-               {
-
-               }
-               else
-               {
-                  this->m_drive
-               }
-               this->m_drive.TankDrive(-speed, -speed);
-               frc::SmartDashboard::PutNumber("Auto balance output", speed);
-            },
-            [this](bool interrupted)
-            { 
-               this->Stop();
-            },
-            // command finishes when elevator within error margin
-            [this] {return m_isRobotBalanced;},
-            // Requires the arm
-            {this})
-   );
-}
-*/
-
 
 void DriveTrain::Periodic()
 {
@@ -268,7 +331,7 @@ void DriveTrain::DisplayValues()
    //frc::SmartDashboard::PutNumber("Gyro angle Raw:", m_pigeon.Getgy);
    frc::SmartDashboard::PutNumber("Gyro Angle", m_gyroAngle);
    //frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
-   frc::SmartDashboard::PutNumber("Gyro Roll:", m_pigeon.GetRoll());
+   frc::SmartDashboard::PutNumber("Gyro Roll:",GyroGetRoll(true));
    frc::SmartDashboard::PutNumber("Gyro Target:", m_tgtAngle);
    frc::SmartDashboard::PutNumber("Gyro Error:", m_gyroTurnError);
    frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
@@ -279,6 +342,13 @@ void DriveTrain::DisplayValues()
    frc::SmartDashboard::PutNumber("Drive Error", m_driveError);
    frc::SmartDashboard::PutNumber("DriveLSpeed", m_encoderVelocity);
    frc::SmartDashboard::PutNumber("DriveRSpeed", m_DriveR1encoder.GetVelocity());
+   if (m_isBrakeMode)
+      frc::SmartDashboard::PutString("MotorIdleMode", "Brake");
+   else
+      frc::SmartDashboard::PutString("MotorIdleMode", "Coast");
+
+   frc::SmartDashboard::PutBoolean("Robot On Ramp?", HasRobotGoneUpRamp());
+   frc::SmartDashboard::PutNumber("Robot max roll", m_maxRoll);
    
    /*
    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");

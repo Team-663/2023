@@ -73,7 +73,9 @@ public:
    static RobotContainer* m_robotContainer;
    frc2::CommandPtr m_driveBackwardscmd = autos::DriveDistanceCmd(&m_drivetrain, -60.0);
    frc2::CommandPtr m_scoreAuto = autos::AutoScoreOnMidCmd(&m_arm, &m_drivetrain);
-   frc2::CommandPtr m_scoreBackAuto = autos::AutoScoreAndBackAwayCmd(&m_arm, &m_drivetrain, -(12.0*15.0));
+   frc2::CommandPtr m_scoreBackAuto = autos::AutoScoreAndBackAwayCmd(&m_arm, &m_drivetrain, kAutoScore_BackDistance); // distance is negative for backwards
+   frc2::CommandPtr m_rotate180Auto = autos::RotateRobotCmd(&m_drivetrain, 180.0);
+   frc2::CommandPtr m_BalanceAuto = autos::BalanceCmd(&m_drivetrain);
    frc::SendableChooser<frc2::Command*> m_chooser;
    //frc2::CommandPtr m_driveByJoystick = DriveTrain::DriveByJoystickCmd(&m_joyL, &m_joyR);
    
