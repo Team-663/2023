@@ -76,6 +76,8 @@ public:
    frc2::CommandPtr m_scoreBackAuto = autos::AutoScoreAndBackAwayCmd(&m_arm, &m_drivetrain, kAutoScore_BackDistance); // distance is negative for backwards
    frc2::CommandPtr m_rotate180Auto = autos::RotateRobotCmd(&m_drivetrain, 180.0);
    frc2::CommandPtr m_BalanceAuto = autos::BalanceCmd(&m_drivetrain);
+   frc2::CommandPtr m_ScoreCubeAuto = autos::AutoScoreCubeCmd(&m_arm);
+   frc2::CommandPtr m_ScoreCubeAndBalanceAuto = autos::AutoScoreCubeAndBalanceCmd(&m_arm, &m_drivetrain, kAutoBalanceMaxDriveDistance);
    frc::SendableChooser<frc2::Command*> m_chooser;
    //frc2::CommandPtr m_driveByJoystick = DriveTrain::DriveByJoystickCmd(&m_joyL, &m_joyR);
    

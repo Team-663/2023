@@ -275,6 +275,8 @@ frc2::CommandPtr DriveTrain::BalanceOnRampCmd()
    return frc2::CommandPtr(
             frc2::FunctionalCommand(
             [this] {
+               this->ResetDriveEncoders();
+               this->UpdateDriveSetpoint(kAutoBalanceMaxDriveDistance);
                this->SetMotorMode(true);
                this->ResetRobotMaxRoll();
             },
@@ -289,14 +291,14 @@ frc2::CommandPtr DriveTrain::BalanceOnRampCmd()
                this->Stop();
                //this->SetMotorMode(false);
             },
-            // command finishes when elevator within error margin
+            // if we hit angle thold and are on our way down, stop
             [this] {
-               if (this->HasRobotGoneUpRamp() && GyroGetRoll(true) < kAutoRobotBalanceAngleStop)
+               if ( (this->HasRobotGoneUpRamp() && GyroGetRoll(true) < kAutoRobotBalanceAngleStop)
+               || (this->IsDriveAtSetpoint()) ) // OR if we have messed up and drove too far just give up
                   return true;
                else 
                   return false;
                },
-            // Requires the arm
             {this})
    );
 }

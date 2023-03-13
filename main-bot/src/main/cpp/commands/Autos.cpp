@@ -35,6 +35,17 @@ frc2::CommandPtr autos::RotateRobotCmd(DriveTrain* drivetrain, double angle)
 frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
 {
    return frc2::cmd::Sequence(
+      arm->ExtendCmd()
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_HIGH)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointDown)
+      ,arm->OpenClawCmd()
+      ,frc2::cmd::Wait(0.5_s)      
+      ,arm->RetractCmd()
+      ,arm->CloseClawCmd()
+      ,frc2::cmd::Wait(0.5_s)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
+      /* Orignal one, seems inefficient
       arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_HIGH)
       ,arm->ExtendCmd()
       ,frc2::cmd::Wait(0.5_s)
@@ -42,13 +53,30 @@ frc2::CommandPtr autos::AutoScoreOnMidCmd(Arm* arm, DriveTrain * drivetrain)
       ,arm->OpenClawCmd()
       ,frc2::cmd::Wait(0.5_s)      
       ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
-      ,frc2::cmd::Wait(0.5_s) 
+      ,frc2::cmd::Wait(0.5_s)
       ,arm->CloseClawCmd()
-      ,frc2::cmd::Wait(0.5_s) 
+      ,frc2::cmd::Wait(0.5_s)
       ,arm->RetractCmd()
       ,frc2::cmd::Wait(0.5_s)
       ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
+      */
       );
+}
+
+frc2::CommandPtr autos::AutoScoreCubeCmd(Arm *arm)
+{
+   return frc2::cmd::Sequence(
+      arm->ExtendCmd()
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_MID)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointStraight)
+      ,arm->OpenClawCmd()
+      ,frc2::cmd::Wait(0.5_s)
+      ,arm->RetractCmd()
+      ,arm->CloseClawCmd()
+      ,frc2::cmd::Wait(0.5_s)
+      ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
+      ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
+   );
 }
 
 frc2::CommandPtr autos::AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain, double dist)
@@ -56,6 +84,15 @@ frc2::CommandPtr autos::AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain
    return frc2::cmd::Sequence(
       AutoScoreOnMidCmd(arm, drivetrain)
       ,DriveDistanceCmd(drivetrain, dist)
+      ,RotateRobotCmd(drivetrain, 180.0)
+   );
+}
+
+frc2::CommandPtr autos::AutoScoreCubeAndBalanceCmd(Arm *arm, DriveTrain* drivetrain, double dist)
+{
+   return frc2::cmd::Sequence(
+      AutoScoreCubeCmd(arm)
+      ,BalanceCmd(drivetrain)
       
    );
 }

@@ -155,4 +155,5 @@ namespace AutoConstants
    constexpr double kAutoRobotBalanceAngleStop = 11.5;
 
    constexpr double kAutoScore_BackDistance = -14.0 * 12.0;
+   constexpr double kAutoBalanceMaxDriveDistance = -13.0 * 12.0;
 };
