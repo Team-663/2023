@@ -220,6 +220,7 @@ frc2::CommandPtr DriveTrain::DriveStraightCmd(double dist, double timeout)
                 this->ResetDriveEncoders();
                 this->UpdateDriveSetpoint(dist);
                 this->SetDrivetrainRamprate(kDriveRampRateAuto);
+                this->SetMotorMode(true);
              },
             // no execute loop, arm subsystem calculates error
             [this] { this->DriveToSetpoint(); },
@@ -339,6 +340,7 @@ void DriveTrain::DisplayValues()
    frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
    frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
 
+   frc::SmartDashboard::PutNumber("Drive At Setpoint?", m_isDriveAtSetpoint);
    frc::SmartDashboard::PutNumber("Drive Setpoint", m_driveSetpoint);
    frc::SmartDashboard::PutNumber("Drive Encoder", GetDriveEncoderValue());
    frc::SmartDashboard::PutNumber("Drive Error", m_driveError);

@@ -88,7 +88,7 @@ private:
    double m_gyroTurnError;
    double m_driveSetpoint;
    double m_driveError;
-   double m_isDriveAtSetpoint;
+   bool m_isDriveAtSetpoint;
    double m_isRobotBalanced;
    bool m_robotOnRamp;
    double m_maxRoll;

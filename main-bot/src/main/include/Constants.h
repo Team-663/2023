@@ -64,7 +64,7 @@ namespace DriveTrainConstants
    constexpr double kDriveRampRateTeleop = 0.0;
    constexpr double kDriveRampRateAuto = 0.5;
 
-   constexpr double kDriveAutoErrorMargin = 2.0; // TODO: tune
+   constexpr double kDriveAutoErrorMargin = 8.0; // TODO: tune
    constexpr double kDriveAutoMaxOutput = 0.5;
    constexpr double kDriveAutoProportionalDist = 20.0; // only start proportional descent within this many error 
    
@@ -152,7 +152,7 @@ namespace AutoConstants
 
    constexpr double kAutoBalananceDriveSpeed = 0.18;
    constexpr double kAutoRobotOnRampRollAngle = 16.0;
-   constexpr double kAutoRobotBalanceAngleStop = 11.5;
+   constexpr double kAutoRobotBalanceAngleStop = 11.0;
 
    constexpr double kAutoScore_BackDistance = -14.0 * 12.0;
    constexpr double kAutoBalanceMaxDriveDistance = -13.0 * 12.0;

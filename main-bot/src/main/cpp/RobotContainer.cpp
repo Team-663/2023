@@ -21,6 +21,8 @@ RobotContainer::RobotContainer()
    m_chooser.AddOption("Score And Balance", m_ScoreCubeAndBalanceAuto.get());
    m_chooser.AddOption("Balance", m_BalanceAuto.get());
    m_chooser.AddOption("Score Cube", m_ScoreCubeAuto.get());
+   m_chooser.AddOption("Rotate 180", m_rotate180Auto.get());
+   
    frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser).WithSize(3, 1);
 
    frc::SmartDashboard::PutData("Rotate 180", m_rotate180Auto.get());
