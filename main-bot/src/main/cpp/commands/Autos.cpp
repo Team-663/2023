@@ -72,7 +72,7 @@ frc2::CommandPtr autos::AutoScoreCubeCmd(Arm *arm)
       ,arm->OpenClawCmd()
       ,frc2::cmd::Wait(0.5_s)
       ,arm->RetractCmd()
-      ,frc2::cmd::Wait(0.5_s)
+      ,frc2::cmd::Wait(1.5_s)
       ,arm->CloseClawCmd()
       ,arm->SetWristPositionCmd(ArmConstants::kWristSetpointBack)
       ,arm->SetElevatorPositionCmd(ArmConstants::kElevatorPos_LOW)
@@ -84,7 +84,7 @@ frc2::CommandPtr autos::AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain
    return frc2::cmd::Sequence(
       AutoScoreOnMidCmd(arm, drivetrain)
       ,DriveDistanceCmd(drivetrain, dist)
-      ,RotateRobotCmd(drivetrain, 180.0)
+      ,RotateRobotCmd(drivetrain, 170.0)
    );
 }
 
@@ -92,7 +92,9 @@ frc2::CommandPtr autos::AutoScoreCubeAndBalanceCmd(Arm *arm, DriveTrain* drivetr
 {
    return frc2::cmd::Sequence(
       AutoScoreCubeCmd(arm)
+      ,frc2::cmd::Wait(3.0_s)
       ,BalanceCmd(drivetrain)
+      ,DriveDistanceCmd(drivetrain, kAutoBalanceReverseDist)
       
    );
 }

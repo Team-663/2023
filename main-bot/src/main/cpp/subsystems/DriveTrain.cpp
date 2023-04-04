@@ -283,7 +283,14 @@ frc2::CommandPtr DriveTrain::BalanceOnRampCmd()
             },
             [this] 
             {
-               this->m_drive.TankDrive(kAutoBalananceDriveSpeed, kAutoBalananceDriveSpeed, false);
+               if (this->HasRobotGoneUpRamp())
+               {
+                  this->m_drive.TankDrive(kAutoBalanceDriveSpeedTopRamp, kAutoBalanceDriveSpeedTopRamp, false);
+               }
+               else
+               {
+                  this->m_drive.TankDrive(kAutoBalananceDriveSpeed, kAutoBalananceDriveSpeed, false);
+               }
                frc::SmartDashboard::PutNumber("AutoSpeed", this->m_driveMotorL1.Get());
                // TODO: use 
             },
@@ -331,21 +338,19 @@ void DriveTrain::SetDrivetrainRamprate(double rate)
 
 void DriveTrain::DisplayValues()
 {
-   //frc::SmartDashboard::PutNumber("Gyro angle Raw:", m_pigeon.Getgy);
-   frc::SmartDashboard::PutNumber("Gyro Angle", m_gyroAngle);
-   //frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
-   frc::SmartDashboard::PutNumber("Gyro Roll:",GyroGetRoll(true));
-   frc::SmartDashboard::PutNumber("Gyro Target:", m_tgtAngle);
-   frc::SmartDashboard::PutNumber("Gyro Error:", m_gyroTurnError);
-   frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
-   frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
+   //frc::SmartDashboard::PutNumber("Gyro Angle", m_gyroAngle);
+   //frc::SmartDashboard::PutNumber("Gyro Roll:",GyroGetRoll(true));
+   //frc::SmartDashboard::PutNumber("Gyro Target:", m_tgtAngle);
+   //frc::SmartDashboard::PutNumber("Gyro Error:", m_gyroTurnError);
+   //frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
+   //frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
 
-   frc::SmartDashboard::PutNumber("Drive At Setpoint?", m_isDriveAtSetpoint);
-   frc::SmartDashboard::PutNumber("Drive Setpoint", m_driveSetpoint);
-   frc::SmartDashboard::PutNumber("Drive Encoder", GetDriveEncoderValue());
-   frc::SmartDashboard::PutNumber("Drive Error", m_driveError);
-   frc::SmartDashboard::PutNumber("DriveLSpeed", m_encoderVelocity);
-   frc::SmartDashboard::PutNumber("DriveRSpeed", m_DriveR1encoder.GetVelocity());
+   //frc::SmartDashboard::PutNumber("Drive At Setpoint?", m_isDriveAtSetpoint);
+   //frc::SmartDashboard::PutNumber("Drive Setpoint", m_driveSetpoint);
+   //frc::SmartDashboard::PutNumber("Drive Encoder", GetDriveEncoderValue());
+   //frc::SmartDashboard::PutNumber("Drive Error", m_driveError);
+   //frc::SmartDashboard::PutNumber("DriveLSpeed", m_encoderVelocity);
+   //frc::SmartDashboard::PutNumber("DriveRSpeed", m_DriveR1encoder.GetVelocity());
    if (m_isBrakeMode)
       frc::SmartDashboard::PutString("MotorIdleMode", "Brake");
    else

@@ -16,12 +16,12 @@ RobotContainer::RobotContainer()
 {
 
    frc::CameraServer::StartAutomaticCapture();
-   m_chooser.SetDefaultOption("Score Cone and Backup", m_scoreBackAuto.get());
-   m_chooser.AddOption("Score Cone", m_scoreAuto.get());
-   m_chooser.AddOption("Score And Balance", m_ScoreCubeAndBalanceAuto.get());
-   m_chooser.AddOption("Balance", m_BalanceAuto.get());
-   m_chooser.AddOption("Score Cube", m_ScoreCubeAuto.get());
-   m_chooser.AddOption("Rotate 180", m_rotate180Auto.get());
+   m_chooser.SetDefaultOption("1: Score Cone and Backup", m_scoreBackAuto.get());
+   m_chooser.AddOption("2: Score Cube And Balance", m_ScoreCubeAndBalanceAuto.get());
+   m_chooser.AddOption("TEST: Score Cone", m_scoreAuto.get());
+   m_chooser.AddOption("TEST: Balance", m_BalanceAuto.get());
+   m_chooser.AddOption("TEST: Score Cube", m_ScoreCubeAuto.get());
+   m_chooser.AddOption("TEST: Rotate 180", m_rotate180Auto.get());
    
    frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser).WithSize(3, 1);
 
