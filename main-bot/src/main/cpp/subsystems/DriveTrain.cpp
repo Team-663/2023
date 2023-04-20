@@ -48,7 +48,7 @@ void DriveTrain::DisplayValues()
 {
    frc::SmartDashboard::PutNumber("Gyro Yaw:", m_pigeon.GetYaw());
    frc::SmartDashboard::PutNumber("Gyro Pitch:", m_pigeon.GetPitch());
-     frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
+   frc::SmartDashboard::PutNumber("Tank L", m_driveLVal);
    frc::SmartDashboard::PutNumber("Tank R", m_driveRVal);
    /*
    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
