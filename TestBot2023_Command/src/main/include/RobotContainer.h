@@ -13,6 +13,7 @@
 #include "subsystems/ExampleSubsystem.h"
 #include "subsystems/DriveTrain.h"
 #include "subsystems/Arm.h"
+#include "subsystems/Camera.h"
 
 #include <commands/AutoBalance.h>
 #include <commands/RotateToTag.h>

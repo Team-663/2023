@@ -7,10 +7,20 @@
 #include <frc2/command/CommandPtr.h>
 
 #include "subsystems/ExampleSubsystem.h"
+#include <subsystems/Arm.h>
+#include <subsystems/DriveTrain.h>
+
 
 namespace autos {
 /**
  * Example static factory for an autonomous command.
  */
+frc2::CommandPtr DriveDistanceCmd(DriveTrain * drivetrain, double dist);
+frc2::CommandPtr AutoScoreOnMidCmd(Arm* arm, DriveTrain *drivetrain);
+frc2::CommandPtr AutoScoreCubeCmd(Arm *arm);
+frc2::CommandPtr AutoScoreAndBackAwayCmd(Arm *arm, DriveTrain* drivetrain, double dist);
+frc2::CommandPtr AutoScoreCubeAndBalanceCmd(Arm *arm, DriveTrain* drivetrain, double dist);
+frc2::CommandPtr RotateRobotCmd(DriveTrain* drivetrain, double angle);
+frc2::CommandPtr BalanceCmd(DriveTrain * drivetrain);
 frc2::CommandPtr ExampleAuto(ExampleSubsystem* subsystem);
 }  // namespace autos
