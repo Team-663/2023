@@ -8,8 +8,11 @@
 
 #include <frc/TimedRobot.h>
 #include <frc2/command/CommandPtr.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include "RobotContainer.h"
+
+#define USE_LIMELIGHT 0
 
 class Robot : public frc::TimedRobot {
  public:
@@ -28,7 +31,8 @@ class Robot : public frc::TimedRobot {
  private:
   // Have it empty by default so that if testing teleop it
   // doesn't have undefined behavior and potentially crash.
-  std::optional<frc2::CommandPtr> m_autonomousCommand;
+  //std::optional<frc2::CommandPtr> m_autonomousCommand;
+  frc2::Command* m_autonomousCommand = nullptr;
 
   RobotContainer m_container;
 };

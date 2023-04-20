@@ -5,54 +5,96 @@
 #include "RobotContainer.h"
 
 #include <frc2/command/button/Trigger.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 
 #include "commands/Autos.h"
 #include "commands/ExampleCommand.h"
 
+RobotContainer *RobotContainer::m_robotContainer = NULL;
 
-RobotContainer::RobotContainer() {
-  frc::SmartDashboard::PutNumber("TEST NUM", 123);
-  //frc::SmartDashboard::PutData("Auto Balance", new AutoBalance(&m_driveTrain));
-  //frc::SmartDashboard::PutData("Auto Rotate To Tag", new RotateToTag(&m_driveTrain, false));
-  
-  m_driveTrain.SetDefaultCommand(frc2::cmd::Run(
-      [this] {
-        //m_driveTrain.TankDrive(-m_xbox.GetLeftY(),
-        //                    -m_xbox.GetRightY());
-        m_driveTrain.TankDrive(m_joyL.GetY(), m_joyR.GetY());
-      },
-      {&m_driveTrain}));
+RobotContainer::RobotContainer()
+{
 
-  m_arm.SetDefaultCommand(frc2::cmd::Run(
-      [this] {
-         m_arm.SetElevatorSpeedManual(m_xbox.GetRightY()); 
-      }, 
-      {&m_arm}));
+   frc::CameraServer::StartAutomaticCapture();
+   m_chooser.SetDefaultOption("1: Score Cone and Backup", m_scoreBackAuto.get());
+   m_chooser.AddOption("2: Score Cube And Balance", m_ScoreCubeAndBalanceAuto.get());
+   m_chooser.AddOption("TEST: Score Cone", m_scoreAuto.get());
+   m_chooser.AddOption("TEST: Balance", m_BalanceAuto.get());
+   m_chooser.AddOption("TEST: Score Cube", m_ScoreCubeAuto.get());
+   m_chooser.AddOption("TEST: Rotate 180", m_rotate180Auto.get());
+   
+   frc::Shuffleboard::GetTab("Autonomous").Add(m_chooser).WithSize(3, 1);
 
-  m_wrist.SetDefaultCommand(frc2::cmd::Run(
-      [this] {
-         m_wrist.MoveWrist(m_xbox.GetLeftY()); 
-      }, 
-      {&m_wrist}));
-  // Configure the button bindings
-  ConfigureBindings();
+   frc::SmartDashboard::PutData("Rotate 180", m_rotate180Auto.get());
+   frc::Shuffleboard::GetTab("Autonomous").Add("Balance", m_BalanceAuto.get());
+   m_drivetrain.SetDefaultCommand(DriveByJoystick(&m_drivetrain, &m_joyL, &m_joyR));
+   m_arm.SetDefaultCommand(ArmByJoystick(&m_arm, &m_xbox, &m_joyL, &m_joyR));
+   // Configure the button bindings
+   ConfigureBindings();
 }
 
-void RobotContainer::ConfigureBindings() {
-  //m_xbox.A().WhileTrue(RotateToTag(&m_driveTrain, true).ToPtr());
-  m_xbox.LeftBumper().OnTrue(frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
-  m_xbox.RightBumper().OnTrue(frc2::cmd::Run([this] { m_arm.CloseClaw(); }, {&m_arm}));
-  m_xbox.B().OnTrue(m_arm.ResetElevatorEncoderCommand());
+RobotContainer *RobotContainer::GetInstance()
+{
+   if (m_robotContainer == NULL)
+   {
+      m_robotContainer = new RobotContainer();
+   }
+   return (m_robotContainer);
 }
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
-  // An example command will be run in autonomous
-  //return autos::ExampleAuto(&m_subsystem);
+void RobotContainer::ConfigureBindings()
+{
+
+   // m_xbox.X().OnTrue(m_drivetrain.BalanceOnRampCmd(0.4));
+   // TODO: enable this when ready
+   // m_xbox.X().WhileTrue(RotateToTag(&m_drivetrain, &m_camera, true).ToPtr());
+
+   /* DO NOT USE: these interrupt the ArmByJoystick command */
+   /*
+     m_xbox.LeftBumper().OnTrue(frc2::cmd::Run([this] { m_arm.OpenClaw(); }, {&m_arm}));
+     m_xbox.RightBumper().OnTrue(frc2::cmd::Run([this] { m_arm.CloseClaw(); }, {&m_arm}));
+     m_xbox.Y().OnTrue(frc2::cmd::Run([this] { m_arm.Extend(); }, {&m_arm}));
+     m_xbox.A().OnTrue(frc2::cmd::Run([this] { m_arm.Retract(); }, {&m_arm}));
+
+     m_xbox.Back().OnTrue(m_arm.ResetElevatorEncoderCommand());
+     */
+}
+
+void RobotContainer::SetMotorsToTeleopSettings()
+{
+   m_drivetrain.SetDrivetrainRamprate(kDriveRampRateTeleop);
+   m_drivetrain.SetMotorMode(false);
+}
+
+void RobotContainer::SetWristDefaults()
+{
+   m_arm.SetWristSetpointHere();
+}
+
+// frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
+frc2::Command *RobotContainer::GetAutonomousCommand()
+{
+   // An example command will be run in autonomous
+   // return autos::ExampleAuto(&m_subsystem);
+   return m_chooser.GetSelected();
+}
+
+frc2::CommandXboxController *RobotContainer::GetXbox()
+{
+   return &m_xbox;
+}
+frc::Joystick *RobotContainer::GetJoyR()
+{
+   return &m_joyR;
+}
+frc::Joystick *RobotContainer::GetJoyL()
+{
+   return &m_joyL;
 }
 
 double RobotContainer::Deadzone(double input)
 {
-  if (input < kXboxStickDeadzone && input > -kXboxStickDeadzone)
-    return 0.0;
-  return input;
+   if (input < kXboxStickDeadzone && input > -kXboxStickDeadzone)
+      return 0.0;
+   return input;
 }
