@@ -16,13 +16,15 @@
 #include "Constants.h"
 #include "hardwareSettings.h"
 
-class swerveModule {
+class SwerveModule {
  public:
-  swerveModule(const double module[]);
+  SwerveModule(const int module[]);
 
-  enum class ConfigType {motorDrive, motorTurn, encoderTurn};
-  void ConfigModule(const ConfigType& type);
-
+  //enum class ConfigType {motorDrive, motorTurn, encoderTurn};
+  //void ConfigModule(const ConfigType& type);
+  void ConfigDriveModule();
+  void ConfigSteerModule();
+  void ConfigEncoderModule();
   frc::SwerveModuleState GetState();
 
   void SetDesiredState(const frc::SwerveModuleState& state);
@@ -33,8 +35,10 @@ class swerveModule {
   double DashboardInfo(const DataType& type);
 
  private:
-  ctre::phoenix::motorcontrol::can::WPI_TalonFX m_motorDrive;
-  ctre::phoenix::motorcontrol::can::WPI_TalonFX m_motorTurn;
+  //ctre::phoenix::motorcontrol::can::WPI_TalonFX m_motorDrive;
+  rev::CANSparkMax m_motorDrive;
+  rev::CANSparkMax m_motorTurn;
+  //ctre::phoenix::motorcontrol::can::WPI_TalonFX m_motorTurn;
   ctre::phoenix::sensors::WPI_CANCoder m_encoderTurn;
   const double m_encoderOffset;
   double m_targetAngle;
