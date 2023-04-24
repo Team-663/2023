@@ -4,9 +4,7 @@
 
 #include "subsystems/DriveTrain.h"
 
-DriveTrain::DriveTrain():
-   m_swerve1Drive{1, rev::CANSparkMax::MotorType::kBrushless},
-   m_swerve1Steer{2, rev::CANSparkMax::MotorType::kBrushless}
+DriveTrain::DriveTrain()
 {
    m_driveSpeed = 0.0;
 }
@@ -29,5 +27,7 @@ void DriveTrain::SwerveDrive(units::feet_per_second x, units::feet_per_second y,
 // This method will be called once per scheduler run
 void DriveTrain::Periodic()
 {
+#ifdef TEST_MODE
    m_swerve1Drive.SetVoltage(m_driveSpeed * 12.0_V);
+#endif
 }

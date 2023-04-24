@@ -19,74 +19,113 @@
 #include <units/time.h>
 #include <units/velocity.h>
 #include <cmath>
+#include <SwerveModule.h>
 
 /**
  * This header contains hold robot-wide numerical or boolean constants ONLY.
- * 
+ *
  * Place constants into subsystem/command -specific NAMESPACES within this
  * header, which can then be included (where they are needed).
  */
 
-namespace controllerConstants {
-    //USB port addresses on drivestation PC.
-    constexpr int kControllerMainID = 0;
-    constexpr int kControllerAuxID = 1;
+namespace controllerConstants
+{
+   // USB port addresses on drivestation PC.
+   constexpr int kControllerMainID = 0;
+   constexpr int kControllerAuxID = 1;
 }
 
-namespace drivetrainConstants {
-    //CAN IDs
-    constexpr int kMotorDriveFrontRightID = 0;
-    constexpr int kMotorDriveRearRightID = 1;
-    constexpr int kMotorDriveFrontLeftID = 2;
-    constexpr int kMotorDriveRearLeftID = 3;
+namespace DriveTrainConstants
+{
+   // Initial controller configs
+   constexpr double kDriveMotorRampRate = 2.0;
+   constexpr double kDrivePID_FF = 0.002;
+   constexpr double kDriveCurrentLimit = 80.0;
+   constexpr double kDriveFinalRatio = 6.75; // WRONG: TODO: calculate
+   constexpr units::length::inch_t kDriveWheelCircumference = {2 * M_PI * 3.8_in / 2};
+   constexpr auto kDriveoduleMaxSpeed{16.3_fps}; // WRONG: TODO: calculate
+   constexpr auto kDriveChassisMaxSpeed{16.3_fps}; // WRONG: TODO: calculate
 
-    constexpr int kMotorTurnFrontRightID = 4;
-    constexpr int kMotorTurnRearRightID = 5;
-    constexpr int kMotorTurnFrontLeftID = 6;
-    constexpr int kMotorTurnRearLeftID = 7;
 
-    constexpr int kEncoderTurnFrontRightID = 8;
-    constexpr int kEncoderTurnRearRightID = 9;
-    constexpr int kEncoderTurnFrontLeftID = 10;
-    constexpr int kEncoderTurnRearLeftID = 11;
+   // Start with these, from SDS/2190 code
+   // See here: https://github.com/SwerveDriveSpecialties/swerve-lib-2022-unmaintained/blob/develop/src/main/java/com/swervedrivespecialties/swervelib/Mk4SwerveModuleHelper.java
+   constexpr double kTurnPID_P = 1.0;
+   constexpr double kTurnPID_I = 0.0;
+   constexpr double kTurnPID_D = 0.1;
+   constexpr double kTurnPID_F = 0.0;
+   constexpr double kTurnCurrentLimit = 20.0;
 
-    namespace offsets {
-        constexpr double kFrontRight{54.844};
-        constexpr double kRearRight{-154.951};
-        constexpr double kFrontLeft{-139.922};
-        constexpr double kRearLeft{103.008};
-    }
+   constexpr int kTurnEncoderResetIterations = 500;
+   constexpr double kTurnEncoderResetMaxV = 0.5;  // no clue what this should be...
 
-    namespace swerveModules {
-        constexpr double kModuleFrontRight[4]{kMotorDriveFrontRightID,
-                                                   kMotorTurnFrontRightID,
-                                                   kEncoderTurnFrontRightID,
-                                                   offsets::kFrontRight};
-        constexpr double kModuleRearRight[4]{kMotorDriveRearRightID,
-                                                  kMotorTurnRearRightID,
-                                                  kEncoderTurnRearRightID,
-                                                  offsets::kRearRight};
-        constexpr double kModuleFrontLeft[4]{kMotorDriveFrontLeftID,
-                                                  kMotorTurnFrontLeftID,
-                                                  kEncoderTurnFrontLeftID,
-                                                  offsets::kFrontLeft};
-        constexpr double kModuleRearLeft[4]{kMotorDriveRearLeftID,
-                                                 kMotorTurnRearLeftID,
-                                                 kEncoderTurnRearLeftID,
-                                                 offsets::kRearLeft};
-    }
+   // Swerve Module IDs
+   constexpr int kModuleFrontRightID = 1;
+   constexpr int kModuleRearRightID = 2;
+   constexpr int kModuleFrontLeftID = 3;
+   constexpr int kModuleRearLeftID = 4;
+   // CAN IDs
+   constexpr int kMotorDriveFrontRightID = 1;
+   constexpr int kMotorDriveRearRightID = 4;
+   constexpr int kMotorDriveFrontLeftID = 7;
+   constexpr int kMotorDriveRearLeftID = 10;
 
-    namespace calculations {
-        constexpr auto kFinalDriveRatio{6.75 * 360_deg};
-        constexpr units::length::inch_t kWheelCircumference = {2 * M_PI * 3.8_in / 2};
+   constexpr int kMotorTurnFrontRightID = 2;
+   constexpr int kMotorTurnRearRightID = 5;
+   constexpr int kMotorTurnFrontLeftID = 8;
+   constexpr int kMotorTurnRearLeftID = 11;
 
-        constexpr auto kModuleMaxSpeed{16.3_fps};
-        constexpr auto kChassisMaxSpeed{16.3_fps};
+   constexpr int kEncoderTurnFrontRightID = 3;
+   constexpr int kEncoderTurnRearRightID = 6;
+   constexpr int kEncoderTurnFrontLeftID = 9;
+   constexpr int kEncoderTurnRearLeftID = 12;
 
-        constexpr auto kModuleMaxAngularVelocity{M_PI * 1_rad_per_s};  // radians per second
-        constexpr auto kModuleMaxAngularAcceleration{M_PI * 2_rad_per_s / 1_s};  // radians per second^2
+   constexpr int kPidginID = 20;
 
-        constexpr double kMotorMaxOutput = 0.5;
-        constexpr double kMotorDeadband = 0.1;
-    }
+   // TODO: calculate angle offsets of absolute encoder and update here
+   constexpr double kFrontRightOffset{54.844};
+   constexpr double kRearRightOffset{-154.951};
+   constexpr double kFrontLeftOffset{-139.922};
+   constexpr double kRearLeftOffset{103.008};
+
+   namespace SwerveModules
+   {
+      
+      //static const T_SWERVE_MODULE_PARAMS kModuleFrontRight{kModuleFrontRightID, kMotorDriveFrontRightID, kMotorTurnFrontRightID, kEncoderTurnFrontRightID, kFrontRightOffset};
+      //static const T_SWERVE_MODULE_PARAMS kModuleRearRight{kModuleRearRightID, kMotorDriveRearRightID, kMotorTurnRearRightID, kEncoderTurnRearRightID, kRearRightOffset};
+      //static const T_SWERVE_MODULE_PARAMS kModuleFrontLeft{kModuleFrontLeftID, kMotorDriveFrontLeftID, kMotorTurnFrontLeftID, kEncoderTurnFrontLeftID, kFrontLeftOffset};
+      //static const T_SWERVE_MODULE_PARAMS kModuleRearLeft{kModuleRearLeftID, kMotorDriveRearLeftID, kMotorTurnRearLeftID, kEncoderTurnRearLeftID, kRearLeftOffset};
+/*
+      constexpr double kModuleFrontRightzzz[4]{kMotorDriveFrontRightID,
+                                            kMotorTurnFrontRightID,
+                                            kEncoderTurnFrontRightID,
+                                            offsets::kFrontRightOffset};
+      constexpr double kModuleRearRightzzz[4]{kMotorDriveRearRightID,
+                                           kMotorTurnRearRightID,
+                                           kEncoderTurnRearRightID,
+                                           offsets::kRearRightOffset};
+      constexpr double kModuleFrontLeftzzz[4]{kMotorDriveFrontLeftID,
+                                           kMotorTurnFrontLeftID,
+                                           kEncoderTurnFrontLeftID,
+                                           offsets::kFrontLeftOffset};
+      constexpr double kModuleRearLeftzzz[4]{kMotorDriveRearLeftID,
+                                          kMotorTurnRearLeftID,
+                                          kEncoderTurnRearLeftID,
+                                          offsets::kRearLeftOffset};
+   */
+   }
+   // TODO:
+   namespace calculations
+   {
+      constexpr auto kFinalDriveRatio{6.75 * 360_deg};
+      constexpr units::length::inch_t kWheelCircumference = {2 * M_PI * 3.8_in / 2};
+
+      constexpr auto kModuleMaxSpeed{16.3_fps};
+      constexpr auto kChassisMaxSpeed{16.3_fps};
+
+      constexpr auto kModuleMaxAngularVelocity{M_PI * 1_rad_per_s};           // radians per second
+      constexpr auto kModuleMaxAngularAcceleration{M_PI * 2_rad_per_s / 1_s}; // radians per second^2
+
+      constexpr double kMotorMaxOutput = 0.5;
+      constexpr double kMotorDeadband = 0.1;
+   }
 }

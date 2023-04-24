@@ -7,11 +7,18 @@
 #include <frc2/command/SubsystemBase.h>
 #include <rev/CANSparkMax.h>
 #include <ctre/Phoenix.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/kinematics/SwerveDriveOdometry.h>
 #include "units/velocity.h"
 #include "units/length.h"
 #include "units/angular_velocity.h"
 #include "units/math.h"
+#include "SwerveModule.h"
+#include "Constants.h"
 
+using namespace DriveTrainConstants;
+//#define TEST_MODE true
 class DriveTrain : public frc2::SubsystemBase {
  public:
   DriveTrain();
@@ -25,13 +32,40 @@ class DriveTrain : public frc2::SubsystemBase {
 
   void SwerveDrive(units::feet_per_second x, units::feet_per_second y, units::degrees_per_second);
 
- private:
-  rev::CANSparkMax m_swerve1Drive;
-  rev::CANSparkMax m_swerve1Steer;
-  
+private:
+#ifdef TEST_MODE
+  rev::CANSparkMax m_swerve1Drive{1, rev::CANSparkMax::MotorType::kBrushless};
+  rev::CANSparkMax m_swerve1Steer{2, rev::CANSparkMax::MotorType::kBrushless};
+  Pigeon2 m_pigeon{kPidginID};
+#else
+  frc::Translation2d m_locationFrontRight{+11.6875_in, -11.6875_in};
+  frc::Translation2d m_locationRearRight{-11.6875_in, -11.6875_in};
+  frc::Translation2d m_locationFrontLeft{+11.6875_in, +11.6875_in};
+  frc::Translation2d m_locationRearLeft{-11.6875_in, +11.6875_in};
 
+  //SwerveModule m_frontRight{SwerveModules::kModuleFrontRight};
+  //SwerveModule m_rearRight{SwerveModules::kModuleRearRight};
+  //SwerveModule m_frontLeft{SwerveModules::kModuleFrontLeft};
+  //SwerveModule m_rearLeft{SwerveModules::kModuleRearLeft};
+
+    SwerveModule m_frontRight{kModuleFrontRightID, kMotorDriveFrontRightID, kMotorTurnFrontRightID, kEncoderTurnFrontRightID, kFrontRightOffset};
+      SwerveModule m_rearRight{kModuleRearRightID, kMotorDriveRearRightID, kMotorTurnRearRightID, kEncoderTurnRearRightID, kRearRightOffset};
+      SwerveModule m_frontLeft{kModuleFrontLeftID, kMotorDriveFrontLeftID, kMotorTurnFrontLeftID, kEncoderTurnFrontLeftID, kFrontLeftOffset};
+     SwerveModule m_rearLeft{kModuleRearLeftID, kMotorDriveRearLeftID, kMotorTurnRearLeftID, kEncoderTurnRearLeftID, kRearLeftOffset};
+
+  Pigeon2 m_pigeon{kPidginID};
+
+  frc::SwerveDriveKinematics<4> m_kinematics{m_locationFrontRight,
+                                             m_locationRearRight,
+                                             m_locationFrontLeft,
+                                             m_locationRearLeft};
+
+  //frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, m_navX.GetRotation2d()};
+#endif
   double m_driveSpeed;
   double m_driveAngle;
+
+
   // Components (e.g. motor controllers and sensors) should generally be
   // declared private and exposed only through public methods.
 };
