@@ -43,7 +43,7 @@ namespace DriveTrainConstants
    constexpr double kDriveCurrentLimit = 80.0;
    constexpr double kDriveFinalRatio = 6.75; // WRONG: TODO: calculate
    constexpr units::length::inch_t kDriveWheelCircumference = {2 * M_PI * 3.8_in / 2};
-   constexpr auto kDriveoduleMaxSpeed{16.3_fps}; // WRONG: TODO: calculate
+   constexpr auto kDriveModuleMaxSpeed{16.3_fps}; // WRONG: TODO: calculate
    constexpr auto kDriveChassisMaxSpeed{16.3_fps}; // WRONG: TODO: calculate
 
 
@@ -89,7 +89,7 @@ namespace DriveTrainConstants
 
    namespace SwerveModules
    {
-      
+
       //static const T_SWERVE_MODULE_PARAMS kModuleFrontRight{kModuleFrontRightID, kMotorDriveFrontRightID, kMotorTurnFrontRightID, kEncoderTurnFrontRightID, kFrontRightOffset};
       //static const T_SWERVE_MODULE_PARAMS kModuleRearRight{kModuleRearRightID, kMotorDriveRearRightID, kMotorTurnRearRightID, kEncoderTurnRearRightID, kRearRightOffset};
       //static const T_SWERVE_MODULE_PARAMS kModuleFrontLeft{kModuleFrontLeftID, kMotorDriveFrontLeftID, kMotorTurnFrontLeftID, kEncoderTurnFrontLeftID, kFrontLeftOffset};

@@ -8,6 +8,7 @@
 #include <rev/CANSparkMax.h>
 #include <ctre/Phoenix.h>
 #include <frc/geometry/Translation2d.h>
+#include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include "units/velocity.h"
@@ -16,6 +17,7 @@
 #include "units/math.h"
 #include "SwerveModule.h"
 #include "Constants.h"
+#include <frc/smartdashboard/SmartDashboard.h>
 
 using namespace DriveTrainConstants;
 //#define TEST_MODE true
@@ -30,7 +32,7 @@ class DriveTrain : public frc2::SubsystemBase {
   void SetMotorSpeed(double speed);
   void SetMotorAngle(double angle);
 
-  void SwerveDrive(units::feet_per_second x, units::feet_per_second y, units::degrees_per_second);
+  void SwerveDrive(units::meters_per_second_t x, units::meters_per_second_t y, units::radians_per_second_t z, bool fieldRelative);
 
 private:
 #ifdef TEST_MODE
@@ -43,15 +45,10 @@ private:
   frc::Translation2d m_locationFrontLeft{+11.6875_in, +11.6875_in};
   frc::Translation2d m_locationRearLeft{-11.6875_in, +11.6875_in};
 
-  //SwerveModule m_frontRight{SwerveModules::kModuleFrontRight};
-  //SwerveModule m_rearRight{SwerveModules::kModuleRearRight};
-  //SwerveModule m_frontLeft{SwerveModules::kModuleFrontLeft};
-  //SwerveModule m_rearLeft{SwerveModules::kModuleRearLeft};
-
-    SwerveModule m_frontRight{kModuleFrontRightID, kMotorDriveFrontRightID, kMotorTurnFrontRightID, kEncoderTurnFrontRightID, kFrontRightOffset};
-      SwerveModule m_rearRight{kModuleRearRightID, kMotorDriveRearRightID, kMotorTurnRearRightID, kEncoderTurnRearRightID, kRearRightOffset};
-      SwerveModule m_frontLeft{kModuleFrontLeftID, kMotorDriveFrontLeftID, kMotorTurnFrontLeftID, kEncoderTurnFrontLeftID, kFrontLeftOffset};
-     SwerveModule m_rearLeft{kModuleRearLeftID, kMotorDriveRearLeftID, kMotorTurnRearLeftID, kEncoderTurnRearLeftID, kRearLeftOffset};
+  SwerveModule m_frontRight{kModuleFrontRightID, kMotorDriveFrontRightID, kMotorTurnFrontRightID, kEncoderTurnFrontRightID, kFrontRightOffset};
+  SwerveModule m_rearRight{kModuleRearRightID, kMotorDriveRearRightID, kMotorTurnRearRightID, kEncoderTurnRearRightID, kRearRightOffset};
+  SwerveModule m_frontLeft{kModuleFrontLeftID, kMotorDriveFrontLeftID, kMotorTurnFrontLeftID, kEncoderTurnFrontLeftID, kFrontLeftOffset};
+  SwerveModule m_rearLeft{kModuleRearLeftID, kMotorDriveRearLeftID, kMotorTurnRearLeftID, kEncoderTurnRearLeftID, kRearLeftOffset};
 
   Pigeon2 m_pigeon{kPidginID};
 
